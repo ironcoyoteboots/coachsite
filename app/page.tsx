@@ -1,8 +1,7 @@
-// app/page.tsx
 
 export default function HomePage() {
   return (
-    <main className="min-h-screen bg-white text-slate-500">
+    <main className="min-h-screen bg-white text-slate-600">
       {/* Hero */}
       <section className="
         relative w-full
@@ -25,7 +24,7 @@ export default function HomePage() {
         />
 
         {/* Dark overlay */}
-        <div className="absolute inset-0 bg-black/55" />
+        <div className="absolute inset-0 bg-black/45" />
 
         {/* Hero content */}
         <div className="absolute inset-0 flex items-center">
@@ -79,8 +78,8 @@ export default function HomePage() {
                 Pickleball Coaches
               </h3>
               <p className="mt-1 text-xs sm:text-sm">
-                Show off clinics, weekly drop-in sessions, and 1:1 packages
-                tailored to rec and competitive players.
+                Private lessons, clinics, weekly group sessions and mulit-lesson packages
+                tailored to for your players.
               </p>
             </div>
           </article>
@@ -128,7 +127,7 @@ export default function HomePage() {
       </section>
 
       {/* Customization section */}
-      <section className="border-y border-slate-100 bg-slate-50/70">
+      <section className="border-y border-slate-100 bg-slate-200">
         <div className="mx-auto flex w-full max-w-5xl flex-col gap-6 px-4 py-10 sm:px-6 md:flex-row md:items-center md:px-8 lg:px-10">
           <div className="flex-1 space-y-3">
             <h2 className="text-xl font-semibold tracking-tight sm:text-2xl">
@@ -178,7 +177,7 @@ export default function HomePage() {
           {/* Plan 1 */}
           <div className="flex flex-col rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
             <h3 className="text-sm font-semibold sm:text-2xl text-center mb-2">
-              Starter Page
+              Starter
             </h3>
             <p className="mt-1 text-xs ">
               Clean, simple info page.
@@ -230,7 +229,7 @@ export default function HomePage() {
           {/* Plan 3 */}
           <div className="flex flex-col rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
             <h3 className="text-sm font-semibold sm:text-2xl text-center mb-2">
-              Pro
+              Professional
             </h3>
             <p className="mt-1 text-xs ">
               For coaches running full programs.
@@ -253,6 +252,7 @@ export default function HomePage() {
           </div>
         </div>
       </section>
+
     </main>
   );
 }
