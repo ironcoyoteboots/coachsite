@@ -147,7 +147,7 @@ export default function HomePage() {
             </ul>
           </div>
           <div className="flex-1">
-            <div className="rounded-2xl border border-dashed border-slate-300 bg-white p-4 text-xs sm:text-sm">
+            <div className="rounded-2xl border border border-slate-500/50 bg-white p-4 text-xs sm:text-sm">
               <h4 className="font-medium ">
                 Live Page Editor
               </h4>
@@ -175,7 +175,7 @@ export default function HomePage() {
 
         <div className="grid gap-6 md:grid-cols-3">
           {/* Plan 1 */}
-          <div className="flex flex-col rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+          <div className="group flex flex-col rounded-2xl border border-slate-200 bg-white p-6 shadow-sm hover:border-green-400">
             <h3 className="text-sm font-semibold sm:text-2xl text-center mb-2">
               Starter
             </h3>
@@ -193,13 +193,13 @@ export default function HomePage() {
               <li>• Sport-specific layout and colors.</li>
               <li>• Email sign-up form for interested clients.</li>
             </ul>
-            <button className="mt-5 inline-flex items-center justify-center rounded-full bg-green-500 px-4 py-2 text-sm font-semibold text-white shadow-md transition hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500/70 focus:ring-offset-2">
+            <button className="mt-5 inline-flex items-center justify-center rounded-full bg-green-500 px-4 py-2 text-sm font-semibold text-white shadow-md transition group-hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500/70 focus:ring-offset-2">
               Build your site — free preview
             </button>
           </div>
 
           {/* Plan 2 (recommended) */}
-          <div className="relative flex flex-col rounded-2xl border-2 border-green-500 bg-white p-6 shadow-md">
+          <div className="group relative flex flex-col rounded-2xl border-2 border-green-500 bg-white p-6 shadow-md hover:border-green-400">
             <div className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-green-500 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-white">
               Most Popular
             </div>
@@ -216,18 +216,18 @@ export default function HomePage() {
               </span>
             </p>
             <ul className="mt-4 flex-1 space-y-1.5 text-sm ">
-              <li>• Everything in Starter Page.</li>
+              <li>Starter Page plus:</li>
               <li>• Private lesson, class, and clinic basic scheduling.</li>
               <li>• Take payments for sessions and packages.</li>
               <li>• Automated confirmations for clients.</li>
             </ul>
-            <button className="mt-5 inline-flex items-center justify-center rounded-full bg-green-500 px-4 py-2 text-sm font-semibold text-white shadow-md transition hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500/70 focus:ring-offset-2">
+            <button className="mt-5 inline-flex items-center justify-center rounded-full bg-green-500 px-4 py-2 text-sm font-semibold text-white shadow-md transition group-hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500/70 focus:ring-offset-2">
               Build your site — free preview
             </button>
           </div>
 
           {/* Plan 3 */}
-          <div className="flex flex-col rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+          <div className="group flex flex-col rounded-2xl border border-slate-200 bg-white p-6 shadow-sm hover:border-green-400">
             <h3 className="text-sm font-semibold sm:text-2xl text-center mb-2">
               Professional
             </h3>
@@ -240,18 +240,263 @@ export default function HomePage() {
                 /month
               </span>
             </p>
-            <ul className="mt-4 flex-1 space-y-1.5 text-sm ">
-              <li>• Everything plus</li>
+            <ul className="mt-4 flex-1 space-y-1.5 text-sm  ">
+              <li>Coach plus:</li>
               <li>• Create custom multi-week programs.</li>
               <li>• Support recurring client subscriptions.</li>
               <li>• Great for group training blocks and teams.</li>
             </ul>
-            <button className="mt-5 inline-flex items-center justify-center rounded-full bg-green-500 px-4 py-2 text-sm font-semibold text-white shadow-md transition hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500/70 focus:ring-offset-2">
+            <button className="mt-5 inline-flex items-center justify-center rounded-full bg-green-500 px-4 py-2 text-sm font-semibold text-white shadow-md transition group-hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500/70 focus:ring-offset-2">
               Build your site — free preview
             </button>
           </div>
+
+        </div>
+
+        <div className="mt-10 flex justify-center">
+          <button
+            className="rounded-full bg-green-500 px-6 py-3 text-sm sm:text-base font-semibold text-white shadow-md transition hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500/70 focus:ring-offset-2"
+          >
+            See all plans and options
+          </button>
         </div>
       </section>
+
+      <section className="relative border-y border-slate-100">
+
+        {/* Full-width background image */}
+        <div
+          className="absolute inset-0 bg-cover bg-center"
+          style={{ backgroundImage: "url('/images/pickleballcourt.jpg')" }}
+        />
+
+        {/* Dark overlay for readability */}
+        <div className="absolute inset-0 bg-black/60" />
+
+        {/* Content */}
+        <div className="relative mx-auto w-full max-w-4xl px-4 py-16">
+          <h2 className="text-xl font-semibold tracking-tight sm:text-3xl mb-8 text-white">
+            What coaches are saying
+          </h2>
+
+          <div className="flex flex-col gap-8 text-lg italic">
+
+            {/* Testimonial 1 */}
+            <div className="rounded-xl border-2 border-black bg-white p-6 shadow-xl backdrop-blur-sm">
+              <p className="leading-relaxed">
+                “CoachSite made launching my coaching business ridiculously easy.
+                I built my site in one evening, and had my first paid lesson the next day.”
+              </p>
+              <p className="mt-4 text-right">
+                — Jamie R.
+              </p>
+            </div>
+
+            {/* Testimonial 2 */}
+            <div className="rounded-xl border-2 border-black bg-white p-6 shadow-xl backdrop-blur-sm">
+              <p className="leading-relaxed">
+                “I love how clean everything looks. My students can book lessons instantly
+                without texting me at random hours. Total game changer.”
+              </p>
+              <p className="mt-4 text-right">
+                — Taylor M.
+              </p>
+            </div>
+
+            {/* Testimonial 3 */}
+            <div className="rounded-xl border-2 border-black bg-white p-6 shadow-xl backdrop-blur-sm">
+              <p className="leading-relaxed">
+                “Finally a website builder that feels like it was actually designed for coaches.
+                I customized my colors, added my schedule, and everything just… works.”
+              </p>
+              <p className="mt-4 text-right">
+                — Alex K.
+              </p>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+      {/* How it works section */}
+      <section className="mx-auto w-full max-w-5xl px-4 py-16 sm:px-6 md:px-8 lg:px-10">
+        <div className="mb-8 text-center md:text-left">
+          <h2 className="text-xl font-semibold tracking-tight sm:text-2xl">
+            How your coach site comes together
+          </h2>
+          <p className="mt-2 text-sm sm:text-base text-slate-600">
+            Start from a smart proven, sport-specific layout, then make it yours with your own url,
+            visuals, offers, and schedule.
+          </p>
+        </div>
+
+        <div className="flex flex-col gap-10 md:flex-row md:items-start">
+          {/* Wireframe mock */}
+          <div className="relative mx-auto w-full max-w-md mr-4 mb-4">
+
+            {/* Back layers (mock extra pages) */}
+            <div className="absolute -bottom-8 -right-8 hidden h-full w-full rounded-2xl border border-slate-300 bg-slate-200 md:block" />
+            <div className="absolute -bottom-4 -right-4 hidden h-full w-full rounded-2xl border border-slate-300 bg-green-100 md:block" />
+
+            {/* Main mock page */}
+            <div className="relative rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+
+              {/* Top bar */}
+              <div className="mb-3 flex items-center justify-between gap-2">
+                <div className="h-3 w-16 rounded bg-slate-200" />
+                <div className="flex gap-2">
+                  <div className="h-3 w-10 rounded bg-slate-200" />
+                  <div className="h-3 w-10 rounded bg-slate-200" />
+                  <div className="h-3 w-10 rounded bg-slate-200" />
+                </div>
+              </div>
+
+              {/* Hero area */}
+              <div className="relative mb-4 overflow-hidden rounded-xl bg-slate-900/80">
+
+                {/* Logo placeholder */}
+                <div className="absolute top-5 left-1/2 -translate-x-1/2 h-10 h-2 w-28 rounded-full bg-slate-200 bg-slate-300" />
+
+                {/* Hero image/video */}
+                <div className="h-28 bg-slate-800 sm:h-32" />
+
+                {/* Footer pill containing button + line */}
+                <div className="flex flex-col items-center justify-center gap-2 p-3">
+                  <div className="h-7 w-24 rounded-full bg-green-500/90" />
+                  <div className="h-2 w-28 rounded bg-slate-600" />
+                </div>
+              </div>
+
+              {/* Offer tiles */}
+              <div className="mb-4 grid grid-cols-3 gap-2">
+                <div className="space-y-2 rounded-lg border border-green-400/70 bg-slate-50 p-2">
+                  <div className="h-8 rounded bg-slate-200" />
+                  <div className="h-2 w-12 rounded bg-green-400" />
+                  <div className="h-2 w-10 rounded bg-slate-200" />
+                </div>
+                <div className="space-y-2 rounded-lg border border-green-400/70 bg-slate-50 p-2">
+                  <div className="h-8 rounded bg-slate-200" />
+                  <div className="h-2 w-12 rounded bg-green-400" />
+                  <div className="h-2 w-10 rounded bg-slate-200" />
+                </div>
+                <div className="space-y-2 rounded-lg border border-green-400/70 bg-slate-50 p-2">
+                  <div className="h-8 rounded bg-slate-200" />
+                  <div className="h-2 w-12 rounded bg-green-400" />
+                  <div className="h-2 w-10 rounded bg-slate-200" />
+                </div>
+              </div>
+
+              {/* Testimonials strip */}
+              <div className="mb-4 space-y-2 rounded-xl bg-slate-50 p-3">
+                <div className="h-2.5 w-24 rounded bg-slate-200" />
+                <div className="h-2 w-32 rounded bg-slate-200" />
+                <div className="h-2 w-20 rounded bg-slate-200" />
+              </div>
+
+              {/* Scheduling / events bar */}
+              <div className="mb-4 flex items-center justify-between gap-3 rounded-xl bg-slate-900/90 p-3">
+                <div className="space-y-1">
+                  <div className="h-2.5 w-20 rounded bg-green-400" />
+                  <div className="h-2 w-28 rounded bg-slate-600" />
+                </div>
+                <div className="h-7 w-24 rounded-full bg-green-500/90" />
+              </div>
+
+              {/* NEW: additional info tile row */}
+              <div className="grid grid-cols-3 gap-2">
+                <div className="space-y-1 rounded-lg border border-slate-300 bg-slate-100 p-2">
+                  <div className="h-6 rounded bg-slate-200" />
+                  <div className="h-2 w-16 rounded bg-slate-300" />
+                </div>
+                <div className="space-y-1 rounded-lg border border-slate-300 bg-slate-100 p-2">
+                  <div className="h-6 rounded bg-slate-200" />
+                  <div className="h-2 w-14 rounded bg-slate-300" />
+                </div>
+                <div className="space-y-1 rounded-lg border border-slate-300 bg-slate-100 p-2">
+                  <div className="h-6 rounded bg-slate-200" />
+                  <div className="h-2 w-20 rounded bg-slate-300" />
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+
+          {/* Explanation / steps */}
+          <div className="flex-1 space-y-5 text-sm sm:text-base text-slate-600">
+            <p>
+              Every coach site starts from a proven layout: hero, offers, testimonials,
+              and schedule. From there, you customize just the parts that matter.
+            </p>
+
+            <div className="space-y-3">
+              <div>
+                <h3 className="text-sm font-semibold sm:text-base">
+                  1. Choose your own URL
+                </h3>
+                <p className="text-sm">
+                  Pick a clean, memorable subdomain like <span className="font-semibold text-slate-700">yourname.coachsite.io</span> so players can
+                  find you easily and book lessons without digging through social media.
+                </p>
+              </div>
+
+              <div>
+                <h3 className="text-sm font-semibold  sm:text-base">
+                  2. Drop in your hero
+                </h3>
+                <p className="text-sm">
+                  Choose from our stock content or upload your custom hero video or image, your logo, and a simple intro that tells
+                  players who you are and what you coach.
+                </p>
+              </div>
+
+              <div>
+                <h3 className="text-sm font-semibold  sm:text-base">
+                  3. Add your core offerings
+                </h3>
+                <p className="text-sm">
+                  Create up to three main tiles for private lessons, groups, clinics, or
+                  training blocks—each with its own description and pricing.
+                </p>
+              </div>
+
+              <div>
+                <h3 className="text-sm font-semibold sm:text-base">
+                  4. Show social proof
+                </h3>
+                <p className="text-sm">
+                  Add a few quick testimonials so new clients see real results from real
+                  players, right on your page.
+                </p>
+              </div>
+
+              <div>
+                <h3 className="text-sm font-semibold  sm:text-base">
+                  5. Keep your schedule and events up to date
+                </h3>
+                <p className="text-sm">
+                  Highlight open lesson spots, recurring classes, and special events so your
+                  calendar stays full without back-and-forth texts.
+                </p>
+              </div>
+            </div>
+
+            <p className="text-xs text-slate-500">
+              As we ship more features, this section will evolve to mirror the real coach
+              page layout—this is just a visual placeholder for now.
+            </p>
+          </div>
+        </div>
+
+        <div className="mt-10 flex justify-center">
+          <button
+            className="rounded-full bg-green-500 px-6 py-3 text-sm sm:text-base font-semibold text-white shadow-md transition hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500/70 focus:ring-offset-2"
+          >
+            Build your Coaching Site now!
+          </button>
+        </div>
+      </section>
+
 
     </main>
   );
