@@ -335,7 +335,7 @@ export default function HomePage() {
           <div className="relative mx-auto w-full max-w-md mr-4 mb-4">
 
             {/* Back layers (mock extra pages) */}
-            <div className="absolute -bottom-8 -right-8 hidden h-full w-full rounded-2xl border border-slate-300 bg-slate-200 md:block" />
+            <div className="absolute -bottom-7 -right-7 hidden h-full w-full rounded-2xl border border-slate-300 bg-slate-200 md:block" />
             <div className="absolute -bottom-4 -right-4 hidden h-full w-full rounded-2xl border border-slate-300 bg-green-100 md:block" />
 
             {/* Main mock page */}

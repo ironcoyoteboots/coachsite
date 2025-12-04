@@ -28,3 +28,24 @@ body {
 .logo {
   font-family: "Ultra", serif;
 }
+
+button {
+  cursor: pointer !important;
+}
+
+
+.coach-hero-font-inter {
+  font-family: "Inter", sans-serif;
+}
+
+.coach-hero-font-quicksand {
+  font-family: "Quicksand", sans-serif;
+}
+
+.coach-hero-font-ultra {
+  font-family: "Ultra", serif;
+}
+
+.coach-hero-font-anton {
+  font-family: "Anton", sans-serif;
+}
