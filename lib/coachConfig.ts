@@ -109,7 +109,7 @@ const sampleConfig: CoachConfig = {
     lastName: "Smith",
     businessName: 'Derek Sedona Pickleball',
     sport: 'Pickleball',
-    paletteId: 'classic', // lightSand, lightMint, lightGray, darkGray, darkBlue, sunset, classic
+    paletteId: 'darkBlue', // lightSand, lightMint, lightGray, darkGray, darkBlue, sunset, classic
     hero: {
         businessNameFontClass: 'coach-hero-font-ultra', // one of your 4 font optionsheroNameFontClass: 
         tagline:
