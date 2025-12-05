@@ -6,7 +6,8 @@ export type PaletteId =
   | 'lightGray'
   | 'lightSand'
   | 'lightMint'
-  | 'sunset';
+  | 'sunset'
+  | 'classic';
 
 export interface PaletteClasses {
   pageBg: string;           // main page bg
@@ -17,6 +18,7 @@ export interface PaletteClasses {
   textPrimary: string;      // main text
   textMuted: string;        // softer text
   textHero: string;         // text in hero section
+  textHeroTagline: string;
   textButton: string;       // button text
   heroOverlay: string;      // overlay over image/video
   heroTaglineBg: string;    // pill behind hero tagline
@@ -35,6 +37,7 @@ const palettes: Record<PaletteId, PaletteClasses> = {
     textPrimary: 'text-gray-50',
     textMuted: 'text-gray-300',
     textHero: 'text-gray-100',
+    textHeroTagline: 'text-white',
     textButton: 'text-white',
     heroOverlay: 'bg-black/45',
     heroTaglineBg: 'bg-black/40',
@@ -50,6 +53,7 @@ const palettes: Record<PaletteId, PaletteClasses> = {
     textPrimary: 'text-slate-50',
     textMuted: 'text-slate-300',
     textHero: 'text-slate-50',
+    textHeroTagline: 'text-white',
     textButton: 'text-white',
     heroOverlay: 'bg-slate-950/55',
     heroTaglineBg: 'bg-slate-900/70',
@@ -65,6 +69,7 @@ const palettes: Record<PaletteId, PaletteClasses> = {
     textPrimary: 'text-slate-600',
     textMuted: 'text-slate-600',
     textHero: 'text-slate-900',
+    textHeroTagline: 'text-slate-600',
     textButton: 'text-white',
     heroOverlay: 'bg-slate-900/40',
     heroTaglineBg: 'bg-white/90',
@@ -80,6 +85,7 @@ const palettes: Record<PaletteId, PaletteClasses> = {
     textPrimary: 'text-slate-600',
     textMuted: 'text-amber-800',
     textHero: 'text-white',
+    textHeroTagline: 'text-slate-600',
     textButton: 'text-white',
     heroOverlay: 'bg-amber-900/35',
     heroTaglineBg: 'bg-white/90',
@@ -95,6 +101,7 @@ const palettes: Record<PaletteId, PaletteClasses> = {
     textPrimary: 'text-slate-600',
     textMuted: 'text-emerald-800',
     textHero: 'text-white',
+    textHeroTagline: 'text-slate-600',
     textButton: 'text-white',
     heroOverlay: 'bg-emerald-900/25',
     heroTaglineBg: 'bg-white/90',
@@ -110,12 +117,30 @@ const palettes: Record<PaletteId, PaletteClasses> = {
     textPrimary: 'text-slate-50',
     textMuted: 'text-slate-300',
     textHero: 'text-slate-50',
+    textHeroTagline: 'text-white',
     textButton: 'text-slate-950',
     heroOverlay:
       'bg-gradient-to-br from-purple-950/60 via-slate-950/60 to-orange-900/50',
     heroTaglineBg: 'bg-black/40',
     buttonBg: 'bg-orange-400',
     buttonHoverBg: 'hover:bg-orange-500',
+  },
+  classic: {
+    pageBg: 'bg-white',
+    sectionBg: 'bg-slate-100',
+    sectionAltBg: 'bg-slate-200',
+    cardBg: 'bg-white',
+    border: 'border-slate-300',
+    textPrimary: 'text-slate-500',
+    textMuted: 'text-slate-400',
+    textHero: 'text-white',
+    textHeroTagline: 'text-white',
+    textButton: 'text-white',
+    heroOverlay:
+      'bg-black/45',
+    heroTaglineBg: 'bg-black/40',
+    buttonBg: 'bg-lime-500',
+    buttonHoverBg: 'hover:bg-lime-400',
   },
 };
 

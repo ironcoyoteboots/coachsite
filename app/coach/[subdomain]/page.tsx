@@ -59,7 +59,7 @@ export default async function CoachPage({ params }: { params: Params }) {
           <img
             className="absolute inset-0 h-full w-full object-cover object-center"
             src={coach.hero.heroMediaUrl}
-            alt={coach.hero.businessName}
+            alt={coach.businessName}
           />
         )}
 
@@ -73,19 +73,19 @@ export default async function CoachPage({ params }: { params: Params }) {
               {/* Coach business name – font configurable */}
               <h1
                 className={`
-                  ${coach.heroNameFontClass}
+                  ${coach.hero.businessNameFontClass}
                   text-4xl tracking-wider
                   sm:text-5xl md:text-6xl lg:text-7xl ${palette.textHero}
                 `}
               >
-                {coach.hero.businessName}
+                {coach.businessName}
               </h1>
 
               {/* Tagline pill */}
               <p
                 className={`
                   mt-4 inline-block rounded-[10px] px-6 py-6 text-base sm:text-2xl
-                  ${palette.heroTaglineBg} ${palette.textPrimary}
+                  ${palette.heroTaglineBg} ${palette.textHero}
                 `}
               >
                 {coach.hero.tagline}
@@ -110,7 +110,7 @@ export default async function CoachPage({ params }: { params: Params }) {
               </Link>
 
               {coach.hero.primaryButtonSubtext && (
-                <p className={`text-sm sm:text-xl ${palette.textHero}`}>
+                <p className={`text-sm sm:text-xl ${palette.textHeroTagline}`}>
                   {coach.hero.primaryButtonSubtext}
                 </p>
               )}
@@ -147,7 +147,7 @@ export default async function CoachPage({ params }: { params: Params }) {
                     ${palette.border} ${palette.cardBg}
                   `}
                 >
-                  <div className="aspect-video w-full overflow-hidden">
+                  <div className="aspect-4/4 w-full overflow-hidden">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
                       src={offering.imageUrl}
@@ -159,14 +159,6 @@ export default async function CoachPage({ params }: { params: Params }) {
                     <h3 className="text-base font-semibold md:text-lg">
                       {offering.title}
                     </h3>
-                    <p
-                      className={`
-                        text-xs uppercase tracking-[0.18em]
-                        ${palette.textMuted}
-                      `}
-                    >
-                      {offering.type.replace('_', ' ')}
-                    </p>
                     <p className={`text-sm ${palette.textPrimary}`}>
                       {offering.description}
                     </p>
@@ -185,11 +177,11 @@ export default async function CoachPage({ params }: { params: Params }) {
                         {offering.priceFrom}
                       </p>
                     )}
-                    <div className="pt-2 flex justify-center">
+                    <div className="pt-2 mt-auto flex justify-center">
                       <Link
                         href={offering.ctaHref}
                         className={`
-                          inline-flex w-4/5 sm:w-auto mx-auto items-center justify-center rounded-full px-3 py-2 text-md 
+                          inline-flex w-4/5 sm:w-auto mx-auto items-center justify-center rounded-full px-5 py-2 text-md 
                           ${palette.buttonBg} ${palette.textButton} ${palette.buttonHoverBg}
                         `}
                       >
@@ -213,10 +205,10 @@ export default async function CoachPage({ params }: { params: Params }) {
           <div className="mx-auto flex max-w-6xl flex-col gap-8 px-4 py-12 md:flex-row md:items-center md:py-16">
             <div className="w-full max-w-sm">
               <div className="relative inline-block">
-                <div className="absolute -inset-1 rounded-3xl bg-gradient-to-tr from-lime-400/40 to-green-500/40 blur-md" />
+                <div className="absolute -inset-1 rounded-3xl" />
                 <div
                   className={`
-                    relative overflow-hidden rounded-3xl border p-2
+                    relative overflow-hidden rounded-3xl border p-2 aspect-4/5 mr-10
                     ${palette.border} ${palette.cardBg}
                   `}
                 >
@@ -231,16 +223,8 @@ export default async function CoachPage({ params }: { params: Params }) {
             </div>
 
             <div className="max-w-xl space-y-4">
-              <p
-                className={`
-                  text-xs uppercase tracking-[0.25em]
-                  ${palette.textMuted}
-                `}
-              >
-                About the coach
-              </p>
               <h2 className="text-2xl font-semibold tracking-tight md:text-3xl">
-                Meet {coach.about.name}
+                Meet Coach {coach.about.name}
               </h2>
               <p className={`text-sm ${palette.textMuted}`}>
                 Based in {coach.about.location}
@@ -278,14 +262,6 @@ export default async function CoachPage({ params }: { params: Params }) {
         >
           <div className="mx-auto max-w-6xl px-4 py-12 md:py-16">
             <div className="mb-8 max-w-xl space-y-2">
-              <p
-                className={`
-                  text-xs uppercase tracking-[0.25em]
-                  ${palette.textMuted}
-                `}
-              >
-                Social proof
-              </p>
               <h2 className="text-2xl font-semibold tracking-tight md:text-3xl">
                 {coach.testimonialsTitle}
               </h2>
@@ -326,14 +302,6 @@ export default async function CoachPage({ params }: { params: Params }) {
           <div className="mx-auto max-w-6xl px-4 py-12 md:py-16">
             <div className="mb-6 flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
               <div>
-                <p
-                  className={`
-                    text-xs uppercase tracking-[0.25em]
-                    ${palette.textMuted}
-                  `}
-                >
-                  Upcoming
-                </p>
                 <h2 className="text-2xl font-semibold tracking-tight md:text-3xl">
                   {coach.eventsTitle}
                 </h2>
@@ -423,7 +391,7 @@ export default async function CoachPage({ params }: { params: Params }) {
                 ${palette.buttonBg} ${palette.textButton} ${palette.buttonHoverBg}
               `}
             >
-              Contact Coach ß{coach.firstName} to get started
+              Contact Coach {coach.firstName} to get started
             </a>
           </div>
         </div>
