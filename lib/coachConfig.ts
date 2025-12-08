@@ -115,7 +115,7 @@ const sampleConfig: CoachConfig = {
         tagline:
             'Level up your pickleball game in 4 weeks — without burning out or getting injured.',
         heroMediaType: 'video', // or 'image'
-        heroMediaUrl: '/videos/pickleball01.mp4', // reuse your home hero for now
+        heroMediaUrl: '/videos/pickleball03.mov', // reuse your home hero for now
         primaryButtonLabel: 'Set up a Consultation',
         primaryButtonSubtext:
             'Choose from Private lessons, group classes, and clinics in Sedona.',

@@ -85,7 +85,7 @@ export default async function CoachPage({ params }: { params: Params }) {
               <p
                 className={`
                   mt-4 inline-block rounded-[10px] px-6 py-6 text-base sm:text-2xl
-                  ${palette.heroTaglineBg} ${palette.textHero}
+                  ${palette.heroTaglineBg} ${palette.textHeroTagline}
                 `}
               >
                 {coach.hero.tagline}
@@ -110,7 +110,7 @@ export default async function CoachPage({ params }: { params: Params }) {
               </Link>
 
               {coach.hero.primaryButtonSubtext && (
-                <p className={`text-sm sm:text-xl ${palette.textHeroTagline}`}>
+                <p className={`text-sm sm:text-xl ${palette.textHero}`}>
                   {coach.hero.primaryButtonSubtext}
                 </p>
               )}

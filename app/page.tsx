@@ -16,7 +16,7 @@ export default function HomePage() {
         {/* Video */}
         <video
           className="absolute inset-0 h-full w-full object-cover object-center"
-          src="videos/pickleball01.mp4"
+          src="videos/pickleball03.mov"
           autoPlay
           loop
           muted
