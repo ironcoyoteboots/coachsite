@@ -45,10 +45,10 @@ export default async function CoachPage({ params }: { params: Params }) {
         "
       >
         {/* Background media */}
-        {coach.hero.heroMediaType === 'video' ? (
+        {coach.heroMediaType === 'video' ? (
           <video
             className="absolute inset-0 h-full w-full object-cover object-center"
-            src={coach.hero.heroMediaUrl}
+            src={coach.heroMediaUrl}
             autoPlay
             loop
             muted
@@ -58,7 +58,7 @@ export default async function CoachPage({ params }: { params: Params }) {
           // eslint-disable-next-line @next/next/no-img-element
           <img
             className="absolute inset-0 h-full w-full object-cover object-center"
-            src={coach.hero.heroMediaUrl}
+            src={coach.heroMediaUrl}
             alt={coach.businessName}
           />
         )}
@@ -73,7 +73,7 @@ export default async function CoachPage({ params }: { params: Params }) {
               {/* Coach business name – font configurable */}
               <h1
                 className={`
-                  ${coach.hero.businessNameFontClass}
+                  ${coach.heroBusinessNameFontClass}
                   text-4xl tracking-wider
                   sm:text-5xl md:text-6xl lg:text-7xl ${palette.textHero}
                 `}
@@ -88,30 +88,30 @@ export default async function CoachPage({ params }: { params: Params }) {
                   ${palette.heroTaglineBg} ${palette.textHeroTagline}
                 `}
               >
-                {coach.hero.tagline}
+                {coach.heroTagline}
               </p>
             </div>
 
             <div className="mt-2 flex flex-col items-center gap-3">
               <Link
                 href={
-                  coach.hero.primaryButtonTarget === 'offerings'
+                  coach.heroPrimaryButtonTarget === 'offerings'
                     ? '#offerings'
-                    : coach.hero.primaryButtonTarget === 'contact'
+                    : coach.heroPrimaryButtonTarget === 'contact'
                     ? '#contact'
-                    : coach.hero.primaryButtonHref ?? '#offerings'
+                    : coach.heroPrimaryButtonHref ?? '#offerings'
                 }
                 className={`
                   rounded-full px-8 py-3 text-base font-semibold sm:text-2xl sm:whitespace-nowrap
                   ${palette.buttonBg} ${palette.textButton} ${palette.buttonHoverBg}
                 `}
               >
-                {coach.hero.primaryButtonLabel}
+                {coach.heroPrimaryButtonLabel}
               </Link>
 
-              {coach.hero.primaryButtonSubtext && (
+              {coach.heroPrimaryButtonSubtext && (
                 <p className={`text-sm sm:text-xl ${palette.textHero}`}>
-                  {coach.hero.primaryButtonSubtext}
+                  {coach.heroPrimaryButtonSubtext}
                 </p>
               )}
             </div>

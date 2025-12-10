@@ -1,0 +1,125 @@
+// prisma/schema.prisma
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+//
+// ───────────────────────────────────────────
+//  COACH
+// ───────────────────────────────────────────
+//
+
+model Coach {
+  id        String   @id @default(cuid())
+  subdomain String   @unique
+
+  firstName    String
+  lastName     String
+  businessName String
+  sport        String
+
+  // Theme / palette
+  paletteId                 String
+  heroBusinessNameFontClass String
+
+  // Hero configuration
+  heroTagline              String
+  heroMediaType            String
+  heroMediaUrl             String
+  heroPrimaryButtonLabel   String
+  heroPrimaryButtonSubtext String?
+  heroPrimaryButtonTarget  String
+  heroPrimaryButtonHref    String?
+
+  // Section titles
+  offeringsSectionTitle String
+  testimonialsTitle     String
+  eventsTitle           String
+
+  // About section
+  aboutPhotoUrl       String
+  aboutName           String
+  aboutLocation       String
+  aboutBio            String
+  aboutPhilosophy     String?
+  aboutCertifications String[]  // string array
+
+  // Relations
+  offerings    Offering[]
+  testimonials Testimonial[]
+  events       Event[]
+
+  @@index([subdomain])
+}
+
+//
+// ───────────────────────────────────────────
+//  OFFERINGS
+// ───────────────────────────────────────────
+//
+
+model Offering {
+  id String @id @default(cuid())
+
+  coachId String
+  coach   Coach @relation(fields: [coachId], references: [id], onDelete: Cascade)
+
+  // Data from CoachOfferingConfig
+  slug        String   @unique // maps from offering.id ("private-lessons", etc.)
+  type        String
+  title       String
+  description String
+  imageUrl    String
+
+  levels    String[] // array of strings
+  priceFrom String?
+
+  ctaLabel String
+  ctaHref  String
+}
+
+//
+// ───────────────────────────────────────────
+//  TESTIMONIALS
+// ───────────────────────────────────────────
+//
+
+model Testimonial {
+  id String @id @default(cuid())
+
+  coachId String
+  coach   Coach @relation(fields: [coachId], references: [id], onDelete: Cascade)
+
+  quote  String
+  name   String
+  detail String?
+}
+
+//
+// ───────────────────────────────────────────
+//  EVENTS
+// ───────────────────────────────────────────
+//
+
+model Event {
+  id String @id @default(cuid())
+
+  coachId String
+  coach   Coach @relation(fields: [coachId], references: [id], onDelete: Cascade)
+
+  title     String
+  dateLabel String
+  type      String
+  location  String
+
+  spotsLeft  Int?
+  totalSpots Int?
+
+  ctaLabel String
+  ctaHref  String
+}

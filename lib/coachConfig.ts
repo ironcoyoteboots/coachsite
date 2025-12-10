@@ -7,6 +7,8 @@ import {
     PaletteClasses,
     getPaletteById,
 } from './colorPalettes';
+import { prisma } from './prisma';
+import type { Coach, Offering, Testimonial, Event } from '@prisma/client';
 
 
 export type CoachNameFontClass =
@@ -29,16 +31,6 @@ export type CoachLevel =
     | 'Advanced'
     | 'All levels';
 
-export interface CoachHeroConfig {
-    tagline: string;
-    businessNameFontClass: CoachNameFontClass;
-    heroMediaType: 'image' | 'video';
-    heroMediaUrl: string;
-    primaryButtonLabel: string;
-    primaryButtonSubtext?: string;
-    primaryButtonTarget: 'offerings' | 'contact' | 'custom';
-    primaryButtonHref?: string;
-}
 
 export interface CoachOfferingConfig {
     id: string;
@@ -87,7 +79,14 @@ export interface CoachConfig {
     businessName: string;
     sport: string;
     paletteId: PaletteId;
-    hero: CoachHeroConfig;
+    heroBusinessNameFontClass: CoachNameFontClass;
+    heroTagline: string;
+    heroMediaType: 'image' | 'video';
+    heroMediaUrl: string;
+    heroPrimaryButtonLabel: string;
+    heroPrimaryButtonSubtext?: string;
+    heroPrimaryButtonTarget: 'offerings' | 'contact' | 'custom';
+    heroPrimaryButtonHref?: string;
 
     offeringsSectionTitle: string;
     offerings: CoachOfferingConfig[];
@@ -103,24 +102,21 @@ export interface CoachConfig {
 
 // ───────── Sample  config ─────────
 
-const sampleConfig: CoachConfig = {
+export const sampleConfig: CoachConfig = {
     subdomain: 'derek',
     firstName: "Derek",
     lastName: "Smith",
     businessName: 'Derek Sedona Pickleball',
     sport: 'Pickleball',
     paletteId: 'darkBlue', // lightSand, lightMint, lightGray, darkGray, darkBlue, sunset, classic
-    hero: {
-        businessNameFontClass: 'coach-hero-font-ultra', // one of your 4 font optionsheroNameFontClass: 
-        tagline:
-            'Level up your pickleball game in 4 weeks — without burning out or getting injured.',
-        heroMediaType: 'video', // or 'image'
-        heroMediaUrl: '/videos/pickleball03.mov', // reuse your home hero for now
-        primaryButtonLabel: 'Set up a Consultation',
-        primaryButtonSubtext:
-            'Choose from Private lessons, group classes, and clinics in Sedona.',
-        primaryButtonTarget: 'offerings',
-    },
+    heroBusinessNameFontClass: 'coach-hero-font-ultra',
+    heroTagline:
+        'Level up your pickleball game in 4 weeks — without burning out or getting injured.',
+    heroMediaType: 'video',
+    heroMediaUrl: '/videos/pickleball03.mov',
+    heroPrimaryButtonLabel: 'Set up a Consultation',
+    heroPrimaryButtonSubtext: 'Choose from Private lessons, group classes, and clinics in Sedona.',
+    heroPrimaryButtonTarget: 'offerings',
 
     offeringsSectionTitle: 'Lesson formats that fit your needs',
     offerings: [
@@ -220,25 +216,104 @@ const sampleConfig: CoachConfig = {
     ],
 };
 
-// Registry of configs (for now just Derek)
-const coachConfigs: Record<string, CoachConfig> = {
-  [sampleConfig.subdomain]: sampleConfig,
-};
 // What the page actually consumes
 export interface CoachPageModel extends CoachConfig {
     palette: PaletteClasses;
 }
 
+type CoachWithRelations = Coach & {
+    offerings: Offering[];
+    testimonials: Testimonial[];
+    events: Event[];
+};
+
+function mapCoachRecordToConfig(coach: CoachWithRelations): CoachConfig {
+    return {
+        subdomain: coach.subdomain,
+        firstName: coach.firstName,
+        lastName: coach.lastName,
+        businessName: coach.businessName,
+        sport: coach.sport,
+        paletteId: coach.paletteId as PaletteId,
+
+        heroBusinessNameFontClass:
+            coach.heroBusinessNameFontClass as CoachNameFontClass,
+        heroTagline: coach.heroTagline,
+        heroMediaType: coach.heroMediaType as 'image' | 'video',
+        heroMediaUrl: coach.heroMediaUrl,
+        heroPrimaryButtonLabel: coach.heroPrimaryButtonLabel,
+        heroPrimaryButtonSubtext: coach.heroPrimaryButtonSubtext ?? undefined,
+        heroPrimaryButtonTarget: coach.heroPrimaryButtonTarget as
+            | 'offerings'
+            | 'contact'
+            | 'custom',
+        heroPrimaryButtonHref: coach.heroPrimaryButtonHref ?? undefined,
+
+        offeringsSectionTitle: coach.offeringsSectionTitle,
+        offerings: coach.offerings.map((o) => ({
+            id: o.slug, // DB slug -> config id
+            type: o.type as CoachOfferingType,
+            title: o.title,
+            description: o.description,
+            imageUrl: o.imageUrl,
+            levels: (o.levels ?? []) as CoachLevel[],
+            priceFrom: o.priceFrom ?? undefined,
+            ctaLabel: o.ctaLabel,
+            ctaHref: o.ctaHref,
+        })),
+
+        about: {
+            photoUrl: coach.aboutPhotoUrl,
+            name: coach.aboutName,
+            location: coach.aboutLocation,
+            certifications: coach.aboutCertifications ?? [],
+            bio: coach.aboutBio,
+            philosophy: coach.aboutPhilosophy ?? undefined,
+        },
+
+        testimonialsTitle: coach.testimonialsTitle,
+        testimonials: coach.testimonials.map((t) => ({
+            id: t.id, // use DB id now
+            quote: t.quote,
+            name: t.name,
+            detail: t.detail ?? undefined,
+        })),
+
+        eventsTitle: coach.eventsTitle,
+        events: coach.events.map((e) => ({
+            id: e.id, // use DB id now
+            title: e.title,
+            dateLabel: e.dateLabel,
+            type: e.type as CoachOfferingType,
+            location: e.location,
+            spotsLeft: e.spotsLeft ?? undefined,
+            totalSpots: e.totalSpots ?? undefined,
+            ctaLabel: e.ctaLabel,
+            ctaHref: e.ctaHref,
+        })),
+    };
+}
+
 export async function getCoachPageModelBySubdomain(
     subdomain: string,
 ): Promise<CoachPageModel | null> {
-    const base = coachConfigs[subdomain];
-    if (!base) return null;
+    const coach = await prisma.coach.findUnique({
+        where: { subdomain },
+        include: {
+            offerings: true,
+            testimonials: true,
+            events: true,
+        },
+    });
 
-    const palette = getPaletteById(base.paletteId);
+    if (!coach) return null;
+
+    const config = mapCoachRecordToConfig(coach as CoachWithRelations);
+    const palette = getPaletteById(config.paletteId);
 
     return {
-        ...base,
+        ...config,
         palette,
     };
 }
+
