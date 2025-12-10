@@ -8,7 +8,6 @@ import {
     getPaletteById,
 } from './colorPalettes';
 import { prisma } from './prisma';
-import type { Prisma } from '@prisma/client';
 
 
 export type CoachNameFontClass =
@@ -221,13 +220,7 @@ export interface CoachPageModel extends CoachConfig {
     palette: PaletteClasses;
 }
 
-type CoachWithRelations = Prisma.CoachGetPayload<{
-  include: {
-    offerings: true;
-    testimonials: true;
-    events: true;
-  };
-}>;
+type CoachWithRelations = any;
 
 function mapCoachRecordToConfig(coach: CoachWithRelations): CoachConfig {
     return {
@@ -252,7 +245,7 @@ function mapCoachRecordToConfig(coach: CoachWithRelations): CoachConfig {
         heroPrimaryButtonHref: coach.heroPrimaryButtonHref ?? undefined,
 
         offeringsSectionTitle: coach.offeringsSectionTitle,
-        offerings: coach.offerings.map((o) => ({
+        offerings: coach.offerings.map((o: any) => ({
             id: o.slug, // DB slug -> config id
             type: o.type as CoachOfferingType,
             title: o.title,
@@ -274,7 +267,7 @@ function mapCoachRecordToConfig(coach: CoachWithRelations): CoachConfig {
         },
 
         testimonialsTitle: coach.testimonialsTitle,
-        testimonials: coach.testimonials.map((t) => ({
+        testimonials: coach.testimonials.map((t: any) => ({
             id: t.id, // use DB id now
             quote: t.quote,
             name: t.name,
@@ -282,7 +275,7 @@ function mapCoachRecordToConfig(coach: CoachWithRelations): CoachConfig {
         })),
 
         eventsTitle: coach.eventsTitle,
-        events: coach.events.map((e) => ({
+        events: coach.events.map((e: any) => ({
             id: e.id, // use DB id now
             title: e.title,
             dateLabel: e.dateLabel,
