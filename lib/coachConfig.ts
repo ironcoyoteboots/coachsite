@@ -8,7 +8,7 @@ import {
     getPaletteById,
 } from './colorPalettes';
 import { prisma } from './prisma';
-import type { Coach, Offering, Testimonial, Event } from '@prisma/client';
+import type { Prisma } from '@prisma/client';
 
 
 export type CoachNameFontClass =
@@ -221,11 +221,13 @@ export interface CoachPageModel extends CoachConfig {
     palette: PaletteClasses;
 }
 
-type CoachWithRelations = Coach & {
-    offerings: Offering[];
-    testimonials: Testimonial[];
-    events: Event[];
-};
+type CoachWithRelations = Prisma.CoachGetPayload<{
+  include: {
+    offerings: true;
+    testimonials: true;
+    events: true;
+  };
+}>;
 
 function mapCoachRecordToConfig(coach: CoachWithRelations): CoachConfig {
     return {
