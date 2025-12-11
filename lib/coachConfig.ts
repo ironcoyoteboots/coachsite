@@ -45,7 +45,6 @@ export interface CoachOfferingConfig {
 
 export interface CoachAboutConfig {
     photoUrl: string;
-    name: string;
     location: string;
     certifications?: string[];
     bio: string;
@@ -78,6 +77,7 @@ export interface CoachConfig {
     businessName: string;
     sport: string;
     paletteId: PaletteId;
+    status:string;
     heroBusinessNameFontClass: CoachNameFontClass;
     heroTagline: string;
     heroMediaType: 'image' | 'video';
@@ -97,6 +97,10 @@ export interface CoachConfig {
 
     eventsTitle: string;
     events: CoachEventConfig[];
+
+    createdDate: Date,
+    modifiedDate: Date,
+    statusChangeDate: Date
 }
 
 // ───────── Sample  config ─────────
@@ -118,6 +122,14 @@ export const sampleConfig: CoachConfig = {
     heroPrimaryButtonTarget: 'offerings',
 
     offeringsSectionTitle: 'Lesson formats that fit your needs',
+
+    //admin stuff
+
+    status: 'ACTIVE',
+    createdDate: new Date(),
+    modifiedDate: new Date(),
+    statusChangeDate: new Date(),
+
     offerings: [
         {
             id: 'private-lessons',
@@ -159,7 +171,6 @@ export const sampleConfig: CoachConfig = {
 
     about: {
         photoUrl: '/images/coaches/derek/profile.jpeg',
-        name: 'Derek Smith',
         location: 'Sedona, Arizona',
         certifications: [
             'Example: IPTPA Certified Coach',
@@ -231,6 +242,13 @@ function mapCoachRecordToConfig(coach: CoachWithRelations): CoachConfig {
         sport: coach.sport,
         paletteId: coach.paletteId as PaletteId,
 
+        //admin stuff
+        status: coach.status,
+        createdDate: coach.createdDate,
+        modifiedDate: coach.modifiedDate,
+        statusChangeDate: coach.statusChangeDate,
+
+
         heroBusinessNameFontClass:
             coach.heroBusinessNameFontClass as CoachNameFontClass,
         heroTagline: coach.heroTagline,
@@ -259,7 +277,6 @@ function mapCoachRecordToConfig(coach: CoachWithRelations): CoachConfig {
 
         about: {
             photoUrl: coach.aboutPhotoUrl,
-            name: coach.aboutName,
             location: coach.aboutLocation,
             certifications: coach.aboutCertifications ?? [],
             bio: coach.aboutBio,

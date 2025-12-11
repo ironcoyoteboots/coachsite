@@ -35,7 +35,6 @@ function getCoachDataFromConfig(config: CoachConfig) {
 
     // About (flattened in DB)
     aboutPhotoUrl: config.about.photoUrl,
-    aboutName: config.about.name,
     aboutLocation: config.about.location,
     aboutBio: config.about.bio,
     aboutPhilosophy: config.about.philosophy ?? null,

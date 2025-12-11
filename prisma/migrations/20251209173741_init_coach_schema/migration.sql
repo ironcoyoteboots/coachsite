@@ -19,7 +19,6 @@ CREATE TABLE "Coach" (
     "testimonialsTitle" TEXT NOT NULL,
     "eventsTitle" TEXT NOT NULL,
     "aboutPhotoUrl" TEXT NOT NULL,
-    "aboutName" TEXT NOT NULL,
     "aboutLocation" TEXT NOT NULL,
     "aboutBio" TEXT NOT NULL,
     "aboutPhilosophy" TEXT,

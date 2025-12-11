@@ -9,6 +9,7 @@ export type PaletteId =
   | 'sunset'
   | 'classic';
 
+
 export interface PaletteClasses {
   pageBg: string;           // main page bg
   sectionBg: string;        // default section bg
@@ -159,4 +160,5 @@ export const ALL_PALETTES: { id: PaletteId; label: string }[] = [
   { id: 'lightSand', label: 'Light Sand' },
   { id: 'lightMint', label: 'Light Mint' },
   { id: 'sunset', label: 'Sunset' },
+  { id: 'classic', label: 'Classic' },
 ];

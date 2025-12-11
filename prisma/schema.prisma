@@ -8,6 +8,12 @@ datasource db {
   provider = "postgresql"
 }
 
+enum CoachStatus {
+  ACTIVE
+  PENDING
+  INACTIVE
+}
+
 //
 // ───────────────────────────────────────────
 //  COACH
@@ -15,8 +21,8 @@ datasource db {
 //
 
 model Coach {
-  id        String   @id @default(cuid())
-  subdomain String   @unique
+  id        String @id @default(cuid())
+  subdomain String @unique
 
   firstName    String
   lastName     String
@@ -43,16 +49,21 @@ model Coach {
 
   // About section
   aboutPhotoUrl       String
-  aboutName           String
   aboutLocation       String
   aboutBio            String
   aboutPhilosophy     String?
-  aboutCertifications String[]  // string array
+  aboutCertifications String[] // string array
 
   // Relations
   offerings    Offering[]
   testimonials Testimonial[]
   events       Event[]
+
+  //Admin
+  status CoachStatus @default(ACTIVE)
+  createdDate DateTime  @default(now()) 
+  modifiedDate DateTime  @default(now()) 
+  statusChangeDate DateTime @default(now()) 
 
   @@index([subdomain])
 }
@@ -67,10 +78,10 @@ model Offering {
   id String @id @default(cuid())
 
   coachId String
-  coach   Coach @relation(fields: [coachId], references: [id], onDelete: Cascade)
+  coach   Coach  @relation(fields: [coachId], references: [id], onDelete: Cascade)
 
   // Data from CoachOfferingConfig
-  slug        String   @unique // maps from offering.id ("private-lessons", etc.)
+  slug        String @unique // maps from offering.id ("private-lessons", etc.)
   type        String
   title       String
   description String
@@ -93,7 +104,7 @@ model Testimonial {
   id String @id @default(cuid())
 
   coachId String
-  coach   Coach @relation(fields: [coachId], references: [id], onDelete: Cascade)
+  coach   Coach  @relation(fields: [coachId], references: [id], onDelete: Cascade)
 
   quote  String
   name   String
@@ -110,7 +121,7 @@ model Event {
   id String @id @default(cuid())
 
   coachId String
-  coach   Coach @relation(fields: [coachId], references: [id], onDelete: Cascade)
+  coach   Coach  @relation(fields: [coachId], references: [id], onDelete: Cascade)
 
   title     String
   dateLabel String

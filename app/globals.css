@@ -19,6 +19,30 @@
   }
 }
 
+@layer components {
+  /* Form container overrides */
+  .coach-form section {
+    @apply bg-slate-100 border rounded-md p-4 border-slate-300;
+  }
+
+  /* Input defaults */
+  .coach-form input,
+  .coach-form textarea,
+  .coach-form select {
+    @apply bg-white border rounded px-2 py-2 w-full border-slate-300;
+  }
+
+  /* Optional: label spacing */
+  .coach-form label {
+    @apply block mb-1 font-bold;
+  }
+
+  .coach-form h2 {
+    @apply font-bold text-lg;
+  }
+
+}
+
 body {
   background: var(--background);
   color: var(--foreground);

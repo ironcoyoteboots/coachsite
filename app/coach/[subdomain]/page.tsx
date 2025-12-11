@@ -224,7 +224,7 @@ export default async function CoachPage({ params }: { params: Params }) {
 
             <div className="max-w-xl space-y-4">
               <h2 className="text-2xl font-semibold tracking-tight md:text-3xl">
-                Meet Coach {coach.about.name}
+                Meet Coach {coach.firstName} {coach.lastName}
               </h2>
               <p className={`text-sm ${palette.textMuted}`}>
                 Based in {coach.about.location}
