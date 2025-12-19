@@ -57,19 +57,20 @@ button {
   cursor: pointer !important;
 }
 
-
-.coach-hero-font-inter {
-  font-family: "Inter", sans-serif;
-}
-
-.coach-hero-font-quicksand {
-  font-family: "Quicksand", sans-serif;
-}
-
-.coach-hero-font-ultra {
-  font-family: "Ultra", serif;
-}
-
-.coach-hero-font-anton {
-  font-family: "Anton", sans-serif;
-}
+.coach-hero-font-anton { font-family: "Anton", sans-serif; }
+.coach-hero-font-bungee-shade {  font-family: "Bungee Shade", system-ui;}
+.coach-hero-font-bungee-spice {  font-family: "Bungee Spice", system-ui;}
+.coach-hero-font-chango {  font-family: "Chango", system-ui;}
+.coach-hero-font-chewy {  font-family: "Chewy", system-ui;}
+.coach-hero-font-honk {  font-family: "Honk", system-ui;  font-variation-settings: "MORF" 15;}
+.coach-hero-font-knewave {  font-family: "Knewave", system-ui;}
+.coach-hero-font-inter {  font-family: "Inter", sans-serif;}
+.coach-hero-font-lexend-zetta {  font-family: "Lexend Zetta", sans-serif;}
+.coach-hero-font-montserrat {  font-family: "Montserrat", sans-serif;}
+.coach-hero-font-outfit {  font-family: "Outfit", sans-serif;}
+.coach-hero-font-quicksand {  font-family: "Quicksand", sans-serif;}
+.coach-hero-font-rubik-dirt {  font-family: "Rubik Dirt", system-ui;}
+.coach-hero-font-rubik-glitch {  font-family: "Rubik Glitch", system-ui;}
+.coach-hero-font-rubik-wet-paint {  font-family: "Rubik Wet Paint", system-ui;}
+.coach-hero-font-ultra {  font-family: "Ultra", serif;}
+.coach-hero-font-wendy-one {  font-family: "Wendy One", sans-serif;}

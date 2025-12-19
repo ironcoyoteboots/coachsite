@@ -1,83 +1,68 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
-type Context = {
+type ParamsContext = {
   params: Promise<{ coachId: string }>;
 };
 
-// GET /api/admin/coaches/[coachId]
-export async function GET(_req: Request, context: Context) {
+export async function GET(_req: Request, context: ParamsContext) {
   const { coachId } = await context.params;
 
-  try {
-    const coach = await prisma.coach.findUnique({
-      where: { id: coachId },
-    });
+  const coach = await prisma.coach.findUnique({
+    where: { id: coachId },
+  });
 
-    if (!coach) {
-      return NextResponse.json(
-        { error: 'Coach not found' },
-        { status: 404 },
-      );
-    }
-
-    return NextResponse.json(coach);
-  } catch (err: any) {
-    console.error('GET /api/admin/coaches/[coachId] error', err);
-
-    return NextResponse.json(
-      {
-        error: 'Error loading coach',
-        message: err?.message ?? String(err),
-      },
-      { status: 500 },
-    );
+  if (!coach) {
+    return new NextResponse('Coach not found', { status: 404 });
   }
+
+  return NextResponse.json(coach);
 }
 
-// PATCH /api/admin/coaches/[coachId]
-// For now: ONLY update firstName to keep it simple.
-export async function PATCH(req: Request, context: Context) {
+export async function PATCH(req: Request, context: ParamsContext) {
   const { coachId } = await context.params;
 
   let body: any;
   try {
     body = await req.json();
-  } catch (err) {
-    console.error('Error parsing JSON body', err);
-    return NextResponse.json(
-      { error: 'Invalid JSON body' },
-      { status: 400 },
-    );
+  } catch {
+    return new NextResponse('Invalid JSON body', { status: 400 });
   }
 
-  const { firstName } = body;
+  // Get existing status so we can track statusChangeDate
+  const existing = await prisma.coach.findUnique({
+    where: { id: coachId },
+    select: { status: true },
+  });
 
-  if (typeof firstName !== 'string' || !firstName.trim()) {
-    return NextResponse.json(
-      { error: 'firstName is required' },
-      { status: 400 },
-    );
+  if (!existing) {
+    return new NextResponse('Coach not found', { status: 404 });
   }
 
-  try {
-    const updated = await prisma.coach.update({
-      where: { id: coachId },
-      data: {
-        firstName,
-      },
-    });
+  // Strip fields the client should never control directly
+  const {
+    id: _ignoredId,
+    createdDate: _ignoredCreated,
+    modifiedDate: _ignoredModified,
+    statusChangeDate: _ignoredStatusChanged,
+    ...rest
+  } = body;
 
-    return NextResponse.json(updated);
-  } catch (err: any) {
-    console.error('PATCH /api/admin/coaches/[coachId] error', err);
+  const data: any = {
+    ...rest,
+    modifiedDate: new Date(),
+  };
 
-    return NextResponse.json(
-      {
-        error: 'Error updating coach',
-        message: err?.message ?? String(err),
-      },
-      { status: 500 },
-    );
+  // If status changed, update statusChangeDate
+  if (rest.status && rest.status !== existing.status) {
+    data.statusChangeDate = new Date();
   }
+
+  const updated = await prisma.coach.update({
+    where: { id: coachId },
+    data,
+  });
+
+  return NextResponse.json(updated);
 }
+

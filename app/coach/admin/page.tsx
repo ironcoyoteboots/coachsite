@@ -32,21 +32,7 @@ export default async function CoachSelfAdminPage() {
       <div className="mx-auto max-w-3xl">
         <h1 className="mb-4 text-2xl font-semibold">Edit My Page</h1>
 
-        <CoachForm
-          mode="self"
-          coach={{
-            id: coach.id,
-            firstName: coach.firstName,
-            lastName: coach.lastName,
-            businessName: coach.businessName,
-            sport: coach.sport,
-            paletteId: coach.paletteId,
-            heroTagline: coach.heroTagline,
-            heroPrimaryButtonLabel: coach.heroPrimaryButtonLabel,
-            heroPrimaryButtonSubtext: coach.heroPrimaryButtonSubtext,
-            status: coach.status, // not editable here, but passed through
-          }}
-        />
+       <CoachForm mode="self" coach={coach} />
       </div>
     </main>
   );

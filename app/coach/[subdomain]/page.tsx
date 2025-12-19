@@ -215,7 +215,7 @@ export default async function CoachPage({ params }: { params: Params }) {
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={coach.about.photoUrl}
-                    alt={coach.about.name}
+                    alt={coach.businessName}
                     className="h-full w-full rounded-2xl object-cover"
                   />
                 </div>

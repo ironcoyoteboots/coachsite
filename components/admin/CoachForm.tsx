@@ -1,22 +1,15 @@
 'use client';
-
-import { FormEvent, useState } from 'react';
+import { FormEvent, useState, useTransition } from 'react';
+import { useRouter } from 'next/navigation';
 import type { Coach, CoachStatus } from '@prisma/client';
-import { ALL_PALETTES, type PaletteId } from '@/lib/colorPalettes';
-import type { CoachNameFontClass } from '@/lib/coachConfig';
+import { ALL_PALETTES, type PaletteId, getPalettePreviewDots } from '@/lib/colorPalettes';
+import { HERO_TITLE_FONT_OPTIONS, type CoachNameFontClass } from '@/lib/coachFonts';
 
 type EditorMode = 'platform' | 'self';
 
 // These are stored as String in Prisma, but in practice we constrain them:
 type HeroMediaType = 'image' | 'video';
 type HeroPrimaryButtonTarget = 'offerings' | 'contact' | 'custom';
-
-const HERO_FONT_OPTIONS: CoachNameFontClass[] = [
-    'coach-hero-font-inter',
-    'coach-hero-font-quicksand',
-    'coach-hero-font-ultra',
-    'coach-hero-font-anton',
-];
 
 const MEDIA_TYPE_OPTIONS: HeroMediaType[] = ['image', 'video'];
 
@@ -32,6 +25,13 @@ interface CoachFormProps {
 }
 
 export function CoachForm({ mode, coach }: CoachFormProps) {
+
+    const router = useRouter();
+    const [isPending, startTransition] = useTransition();
+    const [error, setError] = useState<string | null>(null);
+    const [saved, setSaved] = useState(false);
+
+
     // Identity
     const [subdomain, setSubdomain] = useState(coach.subdomain);
     const [firstName, setFirstName] = useState(coach.firstName);
@@ -68,6 +68,11 @@ export function CoachForm({ mode, coach }: CoachFormProps) {
         coach.heroPrimaryButtonHref ?? '',
     );
 
+
+    const heroTitleSample =
+        (businessName && businessName.trim()) ||
+        'Business Name';
+
     // Section titles
     const [offeringsSectionTitle, setOfferingsSectionTitle] = useState(
         coach.offeringsSectionTitle,
@@ -87,15 +92,34 @@ export function CoachForm({ mode, coach }: CoachFormProps) {
 
     // Status / meta (shown only in platform mode)
     const [status, setStatus] = useState<CoachStatus>(coach.status);
+    const [subdomainStatus, setSubdomainStatus] = useState<'available' | 'taken' | 'checking' | null>(null);
 
+    async function handleCheckSubdomain() {
+        if (!subdomain) return;
 
-    function handleSubmit(e: FormEvent<HTMLFormElement>) {
+        try {
+            setSubdomainStatus('checking');
+            const res = await fetch(
+                `/api/admin/coaches/check-subdomain?subdomain=${encodeURIComponent(
+                    subdomain,
+                )}&coachId=${coach.id}`
+            );
+
+            const data = await res.json();
+            setSubdomainStatus(data.available ? 'available' : 'taken');
+        } catch {
+            setSubdomainStatus('taken');
+        }
+    }
+
+    const [dirty, setDirty] = useState(false);
+
+    async function handleSubmit(e: FormEvent<HTMLFormElement>) {
         e.preventDefault();
+        setError(null);
+        setSaved(false);
 
-        // For now we just log the payload; we will wire PATCH next.
-        // eslint-disable-next-line no-console
-        console.log('CoachForm submit (not wired yet)', {
-            id: coach.id,
+        const payload = {
             subdomain,
             firstName,
             lastName,
@@ -108,9 +132,7 @@ export function CoachForm({ mode, coach }: CoachFormProps) {
             heroMediaUrl,
             heroPrimaryButtonLabel,
             heroPrimaryButtonSubtext:
-                heroPrimaryButtonSubtext.trim() === ''
-                    ? null
-                    : heroPrimaryButtonSubtext,
+                heroPrimaryButtonSubtext.trim() === '' ? null : heroPrimaryButtonSubtext,
             heroPrimaryButtonTarget,
             heroPrimaryButtonHref:
                 heroPrimaryButtonHref.trim() === '' ? null : heroPrimaryButtonHref,
@@ -123,8 +145,41 @@ export function CoachForm({ mode, coach }: CoachFormProps) {
             aboutPhilosophy:
                 aboutPhilosophy.trim() === '' ? null : aboutPhilosophy,
             status,
-        });
+        };
+
+        try {
+            const res = await fetch(`/api/admin/coaches/${coach.id}`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload),
+            });
+
+            if (!res.ok) {
+                let details = '';
+                try {
+                    details = await res.text();
+                } catch {
+                    // ignore
+                }
+                // eslint-disable-next-line no-console
+                console.error('Failed to update coach', res.status, details);
+                setError(`Failed to save changes (HTTP ${res.status}).`);
+                return;
+            }
+
+            setSaved(true);
+            setDirty(false);
+
+            startTransition(() => {
+                router.refresh();
+            });
+        } catch (err) {
+            // eslint-disable-next-line no-console
+            console.error('Unexpected error updating coach', err);
+            setError('Unexpected error saving changes.');
+        }
     }
+
 
     return (
         <form onSubmit={handleSubmit} className="space-y-6 text-md coach-form text-slate-500">
@@ -133,28 +188,81 @@ export function CoachForm({ mode, coach }: CoachFormProps) {
                 <h2 className="font-semibold">Personal Info</h2>
 
                 <div className="grid gap-4 md:grid-cols-2 mt-6">
+                    <div className="col-span-2 -mb-3">
+                        <label htmlFor="subdomain">
+                            Url Name
+                            <div className="text-xs text-slate-500">
+                                Customize the url for your coaching business. This will be your url –{' '}
+                                <i>https://{subdomain || 'yourname'}.coachsite.io</i>
+                            </div>
+                        </label>
+                    </div>
                     <div>
-                        <label className="" htmlFor="subdomain">
-                            Subdomain
+                        <div className="flex gap-2">
+                            <input
+                                id="subdomain"
+                                className="flex-1"
+                                value={subdomain}
+                                onChange={(e) => { setSubdomain(e.target.value); setDirty(true); }}
+                            />
+                        </div>
+                    </div>
+                    <div>
+                        <button
+                            type="button"
+                            className="whitespace-nowrap rounded-lg border border-slate-600 bg-slate-500 text-white px-3 py-2 text-sm hover:bg-slate-400 hover:border-slate-500 "
+                            onClick={handleCheckSubdomain}
+                        >
+                            Check availability
+                        </button>
+
+                        {subdomainStatus && (
+                            <span
+                                className={`mt-1 ml-3 text-sm ${subdomainStatus === 'checking'
+                                    ? 'text-slate-400'
+                                    : subdomainStatus === 'available'
+                                        ? 'text-emerald-600'
+                                        : 'text-red-600'
+                                    }`}
+                            >
+                                {subdomainStatus === 'checking' && 'Checking availability...'}
+                                {subdomainStatus === 'available' && '✓ This URL is available'}
+                                {subdomainStatus === 'taken' && 'This URL is already taken'}
+                            </span>
+                        )}
+                    </div>
+                </div>
+
+                <div className="grid gap-4 md:grid-cols-2 mt-6">
+                    <div>
+                        <label className="" htmlFor="businessName">
+                            Business name
                         </label>
                         <input
-                            id="subdomain"
+                            id="businessName"
                             className=""
-                            value={subdomain}
-                            onChange={(e) => setSubdomain(e.target.value)}
+                            value={businessName}
+                            onChange={(e) => { setBusinessName(e.target.value); setDirty(true); }}
                         />
                     </div>
-
                     <div>
                         <label className="" htmlFor="sport">
                             Sport
                         </label>
-                        <input
+                        <select
                             id="sport"
                             className=""
-                            value={sport}
-                            onChange={(e) => setSport(e.target.value)}
-                        />
+                            value={sport.toUpperCase()}
+                            onChange={(e) =>
+                                setSport(e.target.value)
+                            }
+                        >
+                            <option value="PICKLEBALL">Pickleball</option>
+                            <option value="GOLF">Golf</option>
+                            <option value="YOGA">Yoga</option>
+                            <option value="MARTIALARTS">Martial Arts</option>
+                            <option value="DANCING">Dancing</option>
+                        </select>
                     </div>
                 </div>
 
@@ -167,7 +275,7 @@ export function CoachForm({ mode, coach }: CoachFormProps) {
                             id="firstName"
                             className=""
                             value={firstName}
-                            onChange={(e) => setFirstName(e.target.value)}
+                            onChange={(e) => { setFirstName(e.target.value); setDirty(true); }}
                         />
                     </div>
 
@@ -179,55 +287,61 @@ export function CoachForm({ mode, coach }: CoachFormProps) {
                             id="lastName"
                             className=""
                             value={lastName}
-                            onChange={(e) => setLastName(e.target.value)}
+                            onChange={(e) => { setLastName(e.target.value); setDirty(true); }}
                         />
                     </div>
                 </div>
 
-                <div className="mt-6">
-                    <label className="" htmlFor="businessName">
-                        Business name
-                    </label>
-                    <input
-                        id="businessName"
-                        className=""
-                        value={businessName}
-                        onChange={(e) => setBusinessName(e.target.value)}
-                    />
+
+            </section>
+
+            {/* Colors */}
+            <section className="space-y-3">
+                <h2 className="font-semibold">Colors</h2>
+                <p className="text-xs text-slate-500">
+                    Choose a palette. The samples show key colors such as background and buttons.
+                </p>
+
+                <div className="grid gap-3 md:grid-cols-2 mt-2">
+                    {ALL_PALETTES.map((p) => {
+                        const dots = getPalettePreviewDots(p.id);
+
+                        return (
+                            <label
+                                key={p.id}
+                                className={`flex items-center justify-between gap-3 rounded-lg border px-3 py-2 cursor-pointer transition
+            ${paletteId === p.id
+                                        ? 'border-sky-500 bg-white shadow-sm'
+                                        : 'border-slate-200 bg-slate-50 hover:border-slate-500 hover:bg-white'
+                                    }`}
+                            >
+                                <div className="flex items-center gap-2">
+                                    <input
+                                        type="radio"
+                                        name="paletteId"
+                                        className="h-4 w-4"
+                                        checked={paletteId === p.id}
+                                        onChange={() => { setPaletteId(p.id); setDirty(true); }}
+                                    />
+                                    <span className="text-sm font-medium text-slate-700">
+                                        {p.label}
+                                    </span>
+                                </div>
+
+                                <div className="flex border-slate-400 border-1">
+                                    {dots.map((cls, idx) => (
+                                        <span
+                                            key={idx}
+                                            className={`h-4 w-4 ${cls}`}
+                                        />
+                                    ))}
+                                </div>
+                            </label>
+                        );
+                    })}
                 </div>
             </section>
 
-            {/* Theme */}
-            <section className="space-y-4 ">
-                <h2 className="font-semibold">Theme</h2>
-
-                <div className="grid gap-4 md:grid-cols-2 mt-6">
-                    <div>
-                        <label className="" htmlFor="paletteId">
-                            Choose a Color Palette
-                        </label>
-                        <select
-                            id="paletteId"
-                            className=""
-                            value={paletteId}
-                            onChange={(e) =>
-                                setPaletteId(e.target.value as PaletteId)
-                            }
-                        >
-                            {ALL_PALETTES.map((p) => (
-                                <option key={p.id} value={p.id}>
-                                    {p.label}
-                                </option>
-                            ))}
-                        </select>
-                    </div>
-
-                    <div>
-                        show color palettes here
-
-                    </div>
-                </div>
-            </section>
 
             {/* Hero */}
             <section className="space-y-4 ">
@@ -241,36 +355,8 @@ export function CoachForm({ mode, coach }: CoachFormProps) {
                         id="heroTagline"
                         className=""
                         value={heroTagline}
-                        onChange={(e) => setHeroTagline(e.target.value)}
+                        onChange={(e) => { setHeroTagline(e.target.value); setDirty(true); }}
                     />
-                </div>
-                <div className="grid gap-4 md:grid-cols-2 mt-6">
-                    <div>
-                        <label
-                            className=""
-                            htmlFor="heroBusinessNameFontClass"
-                        >
-                            Hero business name font
-                        </label>
-                        <select
-                            id="heroBusinessNameFontClass"
-                            className=""
-                            value={heroBusinessNameFontClass}
-                            onChange={(e) =>
-                                setHeroBusinessNameFontClass(
-                                    e.target.value as CoachNameFontClass,
-                                )
-                            }
-                        >
-                            {HERO_FONT_OPTIONS.map((f) => (
-                                <option key={f} value={f}>
-                                    {f}
-                                </option>
-                            ))}
-                        </select>
-                    </div>
-                    <div>show examples of fonts</div>
-
                 </div>
 
                 <div className="grid gap-4 md:grid-cols-2 mt-6">
@@ -302,7 +388,7 @@ export function CoachForm({ mode, coach }: CoachFormProps) {
                             id="heroMediaUrl"
                             className=""
                             value={heroMediaUrl}
-                            onChange={(e) => setHeroMediaUrl(e.target.value)}
+                            onChange={(e) => { setHeroMediaUrl(e.target.value); setDirty(true); }}
                         />
                     </div>
                 </div>
@@ -388,6 +474,43 @@ export function CoachForm({ mode, coach }: CoachFormProps) {
                         />
                     </div>
                 </div>
+
+                <div>
+                    <div>
+                        <label className="">Business Name Font</label>
+                        <div className="text-xs text-slate-500 mb-1">
+                            Customize the font for your business name in the hero section.
+                        </div>
+                    </div>
+
+                    <div className="grid gap-3 md:grid-cols-2 gap-3">
+                        {HERO_TITLE_FONT_OPTIONS.map((f) => (
+                            <label
+                                key={f.id}
+                                title={f.label}
+                                className={`flex items-center justify-between gap-4 rounded-lg border px-3 py-2 cursor-pointer transition
+          ${heroBusinessNameFontClass === f.id
+                                        ? 'border-sky-500 bg-white shadow-sm'
+                                        : 'border-slate-200 bg-slate-50 hover:border-slate-500 hover:bg-white'
+                                    }`}
+                            >
+                                <div className="flex items-center gap-2">
+                                    <input
+                                        type="radio"
+                                        name="heroBusinessNameFontClass"
+                                        className="h-4 w-4"
+                                        checked={heroBusinessNameFontClass === f.id}
+                                        onChange={() => { setHeroBusinessNameFontClass(f.id); setDirty(true); }}
+                                    />
+                                    <span className={`text-base md:text-xl ${f.id} text-slate-700`}>
+                                        {heroTitleSample}
+                                    </span>
+                                </div>
+                            </label>
+                        ))}
+                    </div>
+                </div>
+
             </section>
 
             {/* Section titles */}
@@ -437,7 +560,7 @@ export function CoachForm({ mode, coach }: CoachFormProps) {
                             id="eventsTitle"
                             className=""
                             value={eventsTitle}
-                            onChange={(e) => setEventsTitle(e.target.value)}
+                            onChange={(e) => { setEventsTitle(e.target.value); setDirty(true); }}
                         />
                     </div>
                 </div>
@@ -459,7 +582,7 @@ export function CoachForm({ mode, coach }: CoachFormProps) {
                             id="aboutPhotoUrl"
                             className=""
                             value={aboutPhotoUrl}
-                            onChange={(e) => setAboutPhotoUrl(e.target.value)}
+                            onChange={(e) => { setAboutPhotoUrl(e.target.value); setDirty(true); }}
                         />
                     </div>
 
@@ -474,7 +597,7 @@ export function CoachForm({ mode, coach }: CoachFormProps) {
                             id="aboutLocation"
                             className=""
                             value={aboutLocation}
-                            onChange={(e) => setAboutLocation(e.target.value)}
+                            onChange={(e) => { setAboutLocation(e.target.value); setDirty(true); }}
                         />
                     </div>
                 </div>
@@ -487,7 +610,7 @@ export function CoachForm({ mode, coach }: CoachFormProps) {
                         id="aboutBio"
                         className=" min-h-[80px]"
                         value={aboutBio}
-                        onChange={(e) => setAboutBio(e.target.value)}
+                        onChange={(e) => { setAboutBio(e.target.value); setDirty(true); }}
                     />
                 </div>
 
@@ -502,37 +625,37 @@ export function CoachForm({ mode, coach }: CoachFormProps) {
                         id="aboutPhilosophy"
                         className=" min-h-[80px]"
                         value={aboutPhilosophy}
-                        onChange={(e) => setAboutPhilosophy(e.target.value)}
+                        onChange={(e) => { setAboutPhilosophy(e.target.value); setDirty(true); }}
                     />
                 </div>
             </section>
 
             {/* Status (platform mode only) */}
-            {mode === 'platform' && (
-                <section className="space-y-4 ">
-                    <h2 className="font-semibold">Status</h2>
+            {
+                mode === 'platform' && (
+                    <section className="space-y-4 ">
+                        <h2 className="font-semibold">Status</h2>
 
-                    <div className="grid gap-4 md:grid-cols-2 mt-6">
-                        <div>
-                            <label className="" htmlFor="status">
-                                Status
-                            </label>
-                            <select
-                                id="status"
-                                className=""
-                                value={status}
-                                onChange={(e) =>
-                                    setStatus(e.target.value as CoachStatus)
-                                }
-                            >
-                                <option value="ACTIVE">ACTIVE</option>
-                                <option value="PENDING">PENDING</option>
-                                <option value="INACTIVE">INACTIVE</option>
-                            </select>
+                        <div className="grid gap-4 md:grid-cols-2 mt-6">
+                            <div>
+                                <select
+                                    id="status"
+                                    className=""
+                                    value={status}
+                                    onChange={(e) => {
+                                        setStatus(e.target.value as CoachStatus);
+                                        setDirty(true);
+                                    }}
+                                >
+                                    <option value="ACTIVE">ACTIVE</option>
+                                    <option value="PENDING">PENDING</option>
+                                    <option value="INACTIVE">INACTIVE</option>
+                                </select>
+                            </div>
                         </div>
-                    </div>
-                </section>
-            )}
+                    </section>
+                )
+            }
 
             {/* Meta (read only) */}
             <section className="space-y-2 ">
@@ -561,17 +684,47 @@ export function CoachForm({ mode, coach }: CoachFormProps) {
             </section>
 
             {/* Actions */}
-            <section className=" flex items-center justify-between">
-                <button
-                    type="submit"
-                    className="border rounded px-4 py-2"
-                >
-                    Save (not wired yet)
-                </button>
-                <p className="text-xs text-gray-500">
-                    Loads from the database; next step is wiring this to PATCH.
-                </p>
-            </section>
-        </form>
+            <div className="sticky bottom-0 z-10 -mx-6 border-t border-slate-200 bg-white/90 px-6 py-3 backdrop-blur">
+                <div className="flex items-center justify-between gap-3">
+                    <div className="text-sm text-slate-500">
+                        {isPending
+                            ? 'Saving changes…'
+                            : saved
+                                ? 'All changes saved'
+                                : 'Save changes to publish'}
+                        {error && (
+                            <span className="ml-3 text-xs text-red-600">
+                                {error}
+                            </span>
+                        )}
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                        <button
+                            type="button"
+                            className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm hover:border-slate-300"
+                            onClick={() =>
+                                window.open(`/coach/${subdomain}`, '_blank', 'noopener,noreferrer')
+                            }
+                        >
+                            View public page
+                        </button>
+
+                        <button
+                            type="submit"
+                            disabled={!dirty || isPending}
+                            className={`rounded-lg px-3 py-2 text-sm font-medium text-white shadow-sm transition
+                                 ${!dirty || isPending
+                                    ? 'bg-slate-300 cursor-not-allowed'
+                                    : 'bg-sky-600 hover:bg-sky-700'
+                                }`}
+                        >
+                            {isPending ? 'Saving…' : 'Save and publish changes'}
+                        </button>
+
+                    </div>
+                </div>
+            </div>
+        </form >
     );
 }

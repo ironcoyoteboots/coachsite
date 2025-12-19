@@ -9,12 +9,7 @@ import {
 } from './colorPalettes';
 import { prisma } from './prisma';
 
-
-export type CoachNameFontClass =
-    | 'coach-hero-font-inter'
-    | 'coach-hero-font-quicksand'
-    | 'coach-hero-font-ultra'
-    | 'coach-hero-font-anton';
+import type { CoachNameFontClass } from './coachFonts';
 
 // ───────── Coach config types ─────────
 
@@ -77,7 +72,7 @@ export interface CoachConfig {
     businessName: string;
     sport: string;
     paletteId: PaletteId;
-    status:string;
+    status: string;
     heroBusinessNameFontClass: CoachNameFontClass;
     heroTagline: string;
     heroMediaType: 'image' | 'video';

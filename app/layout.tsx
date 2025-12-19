@@ -14,19 +14,28 @@ export default function RootLayout({
 }) {
   return (
 
+    
+
     <html lang="en">
       <head>
         {/* ADD THIS */}
-        <link
-          href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700&display=swap" rel="stylesheet"
-        />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Ultra&display=swap" rel="stylesheet"
-        />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Anton&display=swap" rel="stylesheet" />
+        <link  rel="stylesheet" href={"https://fonts.googleapis.com/css2?"+
+          "family=Anton&"+
+          "family=Bungee+Shade&"+
+          "family=Bungee+Spice&"+
+          "family=Chango&"+
+          "family=Chewy&family=Honk:MORF@15&"+
+          "family=Knewave&"+
+          "family=Inter:wght@300;400;500;600&"+
+          "family=Lexend+Zetta:wght@100..900&"+
+          "family=Montserrat:ital,wght@0,100..900;1,100..900&"+
+          "family=Outfit:wght@100..900&"+
+          "family=Quicksand:wght@300..700&"+
+          "family=Rubik+Dirt&"+
+          "family=Rubik+Glitch&"+
+          "family=Rubik+Wet+Paint&"+
+          "family=Ultra&"+
+          "family=Wendy+One&display=swap"}/>
 
       </head>
       <body className="bg-white">{children}
