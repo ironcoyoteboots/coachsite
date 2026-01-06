@@ -2,101 +2,104 @@
 import 'dotenv/config';
 import { prisma } from '../lib/prisma';
 import { sampleConfig } from '../lib/coachConfig';
-import type {
-  CoachConfig,
-  CoachOfferingConfig,
-  CoachTestimonialConfig,
-  CoachEventConfig,
-} from '../lib/coachConfig';
 
-function getCoachDataFromConfig(config: CoachConfig) {
-  return {
-    subdomain: config.subdomain,
-    firstName: config.firstName,
-    lastName: config.lastName,
-    businessName: config.businessName,
-    sport: config.sport,
-    paletteId: config.paletteId,
-
-    // Hero (flattened in DB)
-     heroBusinessNameFontClass: config.heroBusinessNameFontClass,
-    heroTagline: config.heroTagline,
-    heroMediaType: config.heroMediaType,
-    heroMediaUrl: config.heroMediaUrl,
-    heroPrimaryButtonLabel: config.heroPrimaryButtonLabel,
-    heroPrimaryButtonSubtext: config.heroPrimaryButtonSubtext ?? null,
-    heroPrimaryButtonTarget: config.heroPrimaryButtonTarget,
-    heroPrimaryButtonHref: config.heroPrimaryButtonHref ?? null,
-
-    // Section titles
-    offeringsSectionTitle: config.offeringsSectionTitle,
-    testimonialsTitle: config.testimonialsTitle,
-    eventsTitle: config.eventsTitle,
-
-    // About (flattened in DB)
-    aboutPhotoUrl: config.about.photoUrl,
-    aboutLocation: config.about.location,
-    aboutBio: config.about.bio,
-    aboutPhilosophy: config.about.philosophy ?? null,
-    aboutCertifications: config.about.certifications ?? [],
-  };
-}
-
-async function upsertCoachFromConfig(config: CoachConfig) {
-  const coachData = getCoachDataFromConfig(config);
-
-  // Upsert coach by subdomain
+async function upsertCoach(config: any) {
   const coach = await prisma.coach.upsert({
     where: { subdomain: config.subdomain },
-    update: coachData,
-    create: coachData,
+    update: {
+      firstName: config.firstName,
+      lastName: config.lastName,
+      businessName: config.businessName,
+      sport: config.sport,
+      paletteId: config.paletteId,
+      heroBusinessNameFontClass: config.heroBusinessNameFontClass,
+      heroTagline: config.heroTagline,
+      heroMediaType: config.heroMediaType,
+      heroMediaUrl: config.heroMediaUrl,
+      heroPrimaryButtonLabel: config.heroPrimaryButtonLabel,
+      heroPrimaryButtonSubtext: config.heroPrimaryButtonSubtext,
+      heroPrimaryButtonTarget: config.heroPrimaryButtonTarget,
+      heroPrimaryButtonHref: config.heroPrimaryButtonHref,
+      offeringsSectionTitle: config.offeringsSectionTitle,
+      testimonialsTitle: config.testimonialsTitle,
+      eventsTitle: config.eventsTitle,
+      aboutPhotoUrl: config.about.photoUrl,
+      aboutLocation: config.about.location,
+      aboutBio: config.about.bio,
+      aboutPhilosophy: config.about.philosophy,
+      aboutCertifications: config.about.certifications
+    },
+    create: {
+      subdomain: config.subdomain,
+      firstName: config.firstName,
+      lastName: config.lastName,
+      businessName: config.businessName,
+      sport: config.sport,
+      paletteId: config.paletteId,
+      heroBusinessNameFontClass: config.heroBusinessNameFontClass,
+      heroTagline: config.heroTagline,
+      heroMediaType: config.heroMediaType,
+      heroMediaUrl: config.heroMediaUrl,
+      heroPrimaryButtonLabel: config.heroPrimaryButtonLabel,
+      heroPrimaryButtonSubtext: config.heroPrimaryButtonSubtext,
+      heroPrimaryButtonTarget: config.heroPrimaryButtonTarget,
+      heroPrimaryButtonHref: config.heroPrimaryButtonHref,
+      offeringsSectionTitle: config.offeringsSectionTitle,
+      testimonialsTitle: config.testimonialsTitle,
+      eventsTitle: config.eventsTitle,
+      aboutPhotoUrl: config.about.photoUrl,
+      aboutLocation: config.about.location,
+      aboutBio: config.about.bio,
+      aboutPhilosophy: config.about.philosophy,
+      aboutCertifications: config.about.certifications
+    },
   });
 
-  // Clear child records so seed is idempotent
-  await prisma.offering.deleteMany({ where: { coachId: coach.id } });
+  // Clear children for idempotent seed
+  await prisma.coachOffering.deleteMany({ where: { coachId: coach.id } });
   await prisma.testimonial.deleteMany({ where: { coachId: coach.id } });
   await prisma.event.deleteMany({ where: { coachId: coach.id } });
 
   // Offerings
-  const offerings: CoachOfferingConfig[] = config.offerings ?? [];
-  if (offerings.length) {
-    await prisma.offering.createMany({
-      data: offerings.map((o) => ({
+  for (const o of config.offerings) {
+    await prisma.coachOffering.create({
+      data: {
         coachId: coach.id,
-        slug: o.id, // config.id -> slug
         type: o.type,
+        enabled: true,
         title: o.title,
+        subtitle: null,
         description: o.description,
         imageUrl: o.imageUrl,
-        levels: o.levels ?? [],
-        priceFrom: o.priceFrom ?? null,
-        ctaLabel: o.ctaLabel,
-        ctaHref: o.ctaHref,
-      })),
+        priceDisplay: o.priceFrom ?? null,
+        configJson: {
+          id: o.id,
+          levels: o.levels ?? [],
+          ctaLabel: o.ctaLabel,
+          ctaHref: o.ctaHref,
+          priceFrom: o.priceFrom ?? null,
+        },
+      },
     });
   }
 
   // Testimonials
-  const testimonials: CoachTestimonialConfig[] = config.testimonials ?? [];
-  if (testimonials.length) {
-    await prisma.testimonial.createMany({
-      data: testimonials.map((t) => ({
+  for (const t of config.testimonials) {
+    await prisma.testimonial.create({
+      data: {
         coachId: coach.id,
-        // We ignore t.id for now; DB generates its own id
         quote: t.quote,
         name: t.name,
         detail: t.detail ?? null,
-      })),
+      },
     });
   }
 
   // Events
-  const events: CoachEventConfig[] = config.events ?? [];
-  if (events.length) {
-    await prisma.event.createMany({
-      data: events.map((e) => ({
+  for (const e of config.events) {
+    await prisma.event.create({
+      data: {
         coachId: coach.id,
-        // We ignore e.id for now; DB generates its own id
         title: e.title,
         dateLabel: e.dateLabel,
         type: e.type,
@@ -105,7 +108,7 @@ async function upsertCoachFromConfig(config: CoachConfig) {
         totalSpots: e.totalSpots ?? null,
         ctaLabel: e.ctaLabel,
         ctaHref: e.ctaHref,
-      })),
+      },
     });
   }
 
@@ -113,9 +116,9 @@ async function upsertCoachFromConfig(config: CoachConfig) {
 }
 
 async function main() {
-  console.log('🌱 Seeding CoachSite database...');
+  console.log('🌱 Seeding CoachSite…');
 
-  await upsertCoachFromConfig(sampleConfig);
+  await upsertCoach(sampleConfig);
 
   console.log('✅ Seed complete');
 }

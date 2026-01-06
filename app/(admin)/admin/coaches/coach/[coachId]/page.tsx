@@ -81,7 +81,7 @@ export default function CoachEditPage() {
         </p>
       </div>
 
-      <CoachForm mode="platform" coach={coach} />
+      <CoachForm mode="admin" coach={coach} />
     </div>
   );
 }

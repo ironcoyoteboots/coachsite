@@ -5,7 +5,7 @@ import type { Coach, CoachStatus } from '@prisma/client';
 import { ALL_PALETTES, type PaletteId, getPalettePreviewDots } from '@/lib/colorPalettes';
 import { HERO_TITLE_FONT_OPTIONS, type CoachNameFontClass } from '@/lib/coachFonts';
 
-type EditorMode = 'platform' | 'self';
+type EditorMode = 'admin' | 'self';
 
 // These are stored as String in Prisma, but in practice we constrain them:
 type HeroMediaType = 'image' | 'video';
@@ -630,9 +630,9 @@ export function CoachForm({ mode, coach }: CoachFormProps) {
                 </div>
             </section>
 
-            {/* Status (platform mode only) */}
+            {/* Status (admin mode only) */}
             {
-                mode === 'platform' && (
+                mode === 'admin' && (
                     <section className="space-y-4 ">
                         <h2 className="font-semibold">Status</h2>
 

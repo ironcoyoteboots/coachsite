@@ -1,7 +1,6 @@
 import Link from "next/link";
-
-import { notFound } from 'next/navigation';
-import { getCoachPageModelBySubdomain } from '@/lib/coachConfig';
+import { notFound } from "next/navigation";
+import { getCoachPageModelBySubdomain } from "@/lib/coachConfig";
 
 type Params = Promise<{ subdomain: string }>;
 
@@ -16,18 +15,19 @@ export default async function CoachPage({ params }: { params: Params }) {
 
   const { palette } = coach;
 
-  const offerings = coach.offerings ?? [];
+  // 🔹 use coachOfferings from the new schema / config
+  const offerings = coach.coachOfferings ?? [];
   const testimonials = coach.testimonials ?? [];
   const events = coach.events ?? [];
 
   const offeringGridCols =
-  offerings.length <= 1
-    ? 'grid-cols-1'
-    : offerings.length === 2
-    ? 'grid-cols-1 sm:grid-cols-2'
-    : offerings.length === 3
-    ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3'
-    : 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-4';
+    offerings.length <= 1
+      ? "grid-cols-1"
+      : offerings.length === 2
+      ? "grid-cols-1 sm:grid-cols-2"
+      : offerings.length === 3
+      ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3"
+      : "grid-cols-1 sm:grid-cols-2 lg:grid-cols-4";
 
   return (
     <main className={`min-h-screen ${palette.pageBg} ${palette.textPrimary}`}>
@@ -45,7 +45,7 @@ export default async function CoachPage({ params }: { params: Params }) {
         "
       >
         {/* Background media */}
-        {coach.heroMediaType === 'video' ? (
+        {coach.heroMediaType === "video" ? (
           <video
             className="absolute inset-0 h-full w-full object-cover object-center"
             src={coach.heroMediaUrl}
@@ -95,11 +95,11 @@ export default async function CoachPage({ params }: { params: Params }) {
             <div className="mt-2 flex flex-col items-center gap-3">
               <Link
                 href={
-                  coach.heroPrimaryButtonTarget === 'offerings'
-                    ? '#offerings'
-                    : coach.heroPrimaryButtonTarget === 'contact'
-                    ? '#contact'
-                    : coach.heroPrimaryButtonHref ?? '#offerings'
+                  coach.heroPrimaryButtonTarget === "offerings"
+                    ? "#offerings"
+                    : coach.heroPrimaryButtonTarget === "contact"
+                    ? "#contact"
+                    : coach.heroPrimaryButtonHref ?? "#offerings"
                 }
                 className={`
                   rounded-full px-8 py-3 text-base font-semibold sm:text-2xl sm:whitespace-nowrap
@@ -139,58 +139,78 @@ export default async function CoachPage({ params }: { params: Params }) {
             </div>
 
             <div className={`grid gap-6 ${offeringGridCols}`}>
-              {offerings.map((offering) => (
-                <article
-                  key={offering.id}
-                  className={`
-                    flex flex-col overflow-hidden rounded-2xl border
-                    ${palette.border} ${palette.cardBg}
-                  `}
-                >
-                  <div className="aspect-4/4 w-full overflow-hidden">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src={offering.imageUrl}
-                      alt={offering.title}
-                      className="h-full w-full object-cover"
-                    />
-                  </div>
-                  <div className="flex flex-1 flex-col space-y-3 p-4">
-                    <h3 className="text-base font-semibold md:text-lg">
-                      {offering.title}
-                    </h3>
-                    <p className={`text-sm ${palette.textPrimary}`}>
-                      {offering.description}
-                    </p>
-                    {offering.levels && offering.levels.length > 0 && (
-                      <p className={`text-xs ${palette.textMuted}`}>
-                        Levels:{' '}
-                        {offering.levels
-                          .map((lvl) => lvl.toString())
-                          .join(', ')}
-                      </p>
-                    )}
-                    {offering.priceFrom && (
-                      <p
-                        className={`text-xs  ${palette.textPrimary}`}
-                      >
-                        {offering.priceFrom}
-                      </p>
-                    )}
-                    <div className="pt-2 mt-auto flex justify-center">
-                      <Link
-                        href={offering.ctaHref}
-                        className={`
-                          inline-flex w-4/5 sm:w-auto mx-auto items-center justify-center rounded-full px-5 py-2 text-md 
-                          ${palette.buttonBg} ${palette.textButton} ${palette.buttonHoverBg}
-                        `}
-                      >
-                        {offering.ctaLabel}
-                      </Link>
+              {offerings.map((offering) => {
+                // read extra details from configJson via `config`
+                const levels =
+                  ((offering as any).config?.levels as string[] | undefined) ??
+                  [];
+                const price =
+                  offering.priceDisplay ||
+                  (offering as any).config?.priceDisplay ||
+                  (offering as any).config?.priceFrom;
+                const ctaHref =
+                  (offering as any).config?.ctaHref ?? "#contact";
+                const ctaLabel =
+                  (offering as any).config?.ctaLabel ?? "Learn more";
+
+                return (
+                  <article
+                    key={offering.id}
+                    className={`
+                      flex flex-col overflow-hidden rounded-2xl border
+                      ${palette.border} ${palette.cardBg}
+                    `}
+                  >
+                    <div className="aspect-4/4 w-full overflow-hidden">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={offering.imageUrl ?? ""}
+                        alt={offering.title ?? ""}
+                        className="h-full w-full object-cover"
+                      />
                     </div>
-                  </div>
-                </article>
-              ))}
+                    <div className="flex flex-1 flex-col space-y-3 p-4">
+                      <h3 className="text-base font-semibold md:text-lg">
+                        {offering.title}
+                      </h3>
+                      {offering.subtitle && (
+                        <p className={`text-xs ${palette.textMuted}`}>
+                          {offering.subtitle}
+                        </p>
+                      )}
+                      {offering.description && (
+                        <p className={`text-sm ${palette.textPrimary}`}>
+                          {offering.description}
+                        </p>
+                      )}
+
+                      {levels.length > 0 && (
+                        <p className={`text-xs ${palette.textMuted}`}>
+                          Levels: {levels.join(", ")}
+                        </p>
+                      )}
+
+                      {price && (
+                        <p className={`text-xs ${palette.textPrimary}`}>
+                          {price}
+                        </p>
+                      )}
+
+                      <div className="pt-2 mt-auto flex justify-center">
+                        <Link
+                          href={ctaHref}
+                          className={`
+                            inline-flex w-4/5 sm:w-auto mx-auto items-center justify-center rounded-full px-5 py-2 text-md 
+                            ${palette.buttonBg} ${palette.textButton} ${palette.buttonHoverBg}
+                          `}
+                        >
+                          {ctaLabel}
+                        </Link>
+                      </div>
+                    </div>
+                  </article>
+                );
+              })}
             </div>
           </div>
         </section>
@@ -240,15 +260,13 @@ export default async function CoachPage({ params }: { params: Params }) {
                 </p>
               )}
 
-              {coach.about.certifications && (
-                <ul className="mt-2 space-y-1 text-sm">
-                  {coach.about.certifications.map((cert) => (
-                    <li key={cert} className={palette.textMuted}>
-                      • {cert}
-                    </li>
-                  ))}
-                </ul>
-              )}
+              {/* 🔹 certifications is now a single string, not an array */}
+              {coach.about.certifications &&
+                coach.about.certifications.trim().length > 0 && (
+                  <p className={`mt-2 text-sm ${palette.textMuted}`}>
+                    {coach.about.certifications}
+                  </p>
+                )}
             </div>
           </div>
         </section>
@@ -281,9 +299,7 @@ export default async function CoachPage({ params }: { params: Params }) {
                   <figcaption
                     className={`mt-4 text-xs ${palette.textMuted}`}
                   >
-                    <span className={` ${palette.textPrimary}`}>
-                      {t.name}
-                    </span>
+                    <span className={palette.textPrimary}>{t.name}</span>
                     {t.detail && <> • {t.detail}</>}
                   </figcaption>
                 </figure>
@@ -293,7 +309,7 @@ export default async function CoachPage({ params }: { params: Params }) {
         </section>
       )}
 
-      {/* EVENTS / NEXT SESSIONS */}
+      {/* EVENTS */}
       {events.length > 0 && (
         <section
           id="events"
@@ -370,7 +386,7 @@ export default async function CoachPage({ params }: { params: Params }) {
         </section>
       )}
 
-      {/* CONTACT / SIMPLE CTA (so #contact works) */}
+      {/* CONTACT / SIMPLE CTA */}
       <section
         id="contact"
         className={`border-t ${palette.border} ${palette.sectionBg}`}

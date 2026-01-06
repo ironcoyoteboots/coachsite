@@ -73,6 +73,12 @@ export default async function AdminCoachesPage() {
                                 Edit
                             </Link>
                             <Link
+                                href={`/admin/coaches/coach/${coach.id}/offerings`}
+                                className="inline-flex items-center rounded-full border border-slate-200 px-3 py-1 hover:bg-slate-800 text-slate-200"
+                            >
+                                Offerings
+                            </Link>
+                            <Link
                                 href={`/coach/${coach.subdomain}`}
                                 className="inline-flex items-center rounded-full border border-emerald-500 px-3 py-1 text-emerald-300 hover:bg-emerald-500/10"
                                 target="_blank"

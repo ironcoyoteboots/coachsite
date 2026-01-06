@@ -1,3 +1,9 @@
+-- CreateEnum
+CREATE TYPE "CoachStatus" AS ENUM ('ACTIVE', 'PENDING', 'INACTIVE');
+
+-- CreateEnum
+CREATE TYPE "OfferingType" AS ENUM ('PRIVATE_LESSON', 'GROUP_CLASS', 'CLINIC', 'RETREAT');
+
 -- CreateTable
 CREATE TABLE "Coach" (
     "id" TEXT NOT NULL,
@@ -22,26 +28,31 @@ CREATE TABLE "Coach" (
     "aboutLocation" TEXT NOT NULL,
     "aboutBio" TEXT NOT NULL,
     "aboutPhilosophy" TEXT,
-    "aboutCertifications" TEXT[],
+    "aboutCertifications" TEXT,
+    "status" "CoachStatus" NOT NULL DEFAULT 'ACTIVE',
+    "createdDate" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "modifiedDate" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "statusChangeDate" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "Coach_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
-CREATE TABLE "Offering" (
+CREATE TABLE "CoachOffering" (
     "id" TEXT NOT NULL,
     "coachId" TEXT NOT NULL,
-    "slug" TEXT NOT NULL,
-    "type" TEXT NOT NULL,
-    "title" TEXT NOT NULL,
-    "description" TEXT NOT NULL,
-    "imageUrl" TEXT NOT NULL,
-    "levels" TEXT[],
-    "priceFrom" TEXT,
-    "ctaLabel" TEXT NOT NULL,
-    "ctaHref" TEXT NOT NULL,
+    "type" "OfferingType" NOT NULL,
+    "enabled" BOOLEAN NOT NULL DEFAULT true,
+    "title" TEXT,
+    "subtitle" TEXT,
+    "description" TEXT,
+    "imageUrl" TEXT,
+    "priceDisplay" TEXT,
+    "configJson" JSONB,
+    "createdDate" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "modifiedDate" TIMESTAMP(3) NOT NULL,
 
-    CONSTRAINT "Offering_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "CoachOffering_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -78,10 +89,10 @@ CREATE UNIQUE INDEX "Coach_subdomain_key" ON "Coach"("subdomain");
 CREATE INDEX "Coach_subdomain_idx" ON "Coach"("subdomain");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Offering_slug_key" ON "Offering"("slug");
+CREATE UNIQUE INDEX "CoachOffering_coachId_type_key" ON "CoachOffering"("coachId", "type");
 
 -- AddForeignKey
-ALTER TABLE "Offering" ADD CONSTRAINT "Offering_coachId_fkey" FOREIGN KEY ("coachId") REFERENCES "Coach"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "CoachOffering" ADD CONSTRAINT "CoachOffering_coachId_fkey" FOREIGN KEY ("coachId") REFERENCES "Coach"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Testimonial" ADD CONSTRAINT "Testimonial_coachId_fkey" FOREIGN KEY ("coachId") REFERENCES "Coach"("id") ON DELETE CASCADE ON UPDATE CASCADE;
