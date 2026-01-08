@@ -1,25 +1,26 @@
 // middleware.ts
+import { clerkMiddleware } from '@clerk/nextjs/server';
 import { NextRequest, NextResponse } from 'next/server';
 
 const BASE_DOMAIN =
   process.env.NEXT_PUBLIC_BASE_DOMAIN ?? 'coachsite.io';
 
-export function middleware(request: NextRequest) {
+export default clerkMiddleware((auth, request: NextRequest) => {
   const url = request.nextUrl.clone();
-
   const host = request.headers.get('host') ?? '';
 
-  // 🛑 1. SKIP middleware entirely during localhost development
+  // 1. Skip subdomain rewriting behavior on localhost,
+  //    but still let Clerk run for auth.
   if (host.startsWith('localhost')) {
     return NextResponse.next();
   }
 
-  // 🛑 2. SKIP root domain + www
+  // 2. Skip root domain + www (no rewrite)
   if (host === BASE_DOMAIN || host === `www.${BASE_DOMAIN}`) {
     return NextResponse.next();
   }
 
-  // 🛑 3. Only handle *.coachsite.io
+  // 3. Only handle *.coachsite.io
   if (!host.endsWith(`.${BASE_DOMAIN}`)) {
     return NextResponse.next();
   }
@@ -34,8 +35,9 @@ export function middleware(request: NextRequest) {
   }
 
   return NextResponse.next();
-}
+});
 
+// Keep your matcher (this is fine with Clerk)
 export const config = {
   matcher: ['/((?!_next/static|_next/image|favicon.ico|api).*)'],
 };

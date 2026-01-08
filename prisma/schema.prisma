@@ -8,13 +8,16 @@ datasource db {
   provider = "postgresql"
 }
 
+// ───────────────────────────────────────────
+// Enums
+// ───────────────────────────────────────────
+
 enum CoachStatus {
   ACTIVE
   PENDING
   INACTIVE
 }
 
-// New: offering types for a coach
 enum OfferingType {
   PRIVATE_LESSON
   GROUP_CLASS
@@ -22,15 +25,68 @@ enum OfferingType {
   RETREAT
 }
 
-//
+enum AccountRole {
+  ADMIN
+  COACH
+  STUDENT
+}
+
+enum StudentSkillLevel {
+  BEGINNER
+  ADVANCED_BEGINNER
+  INTERMEDIATE
+  ADVANCED_INTERMEDIATE
+  ADVANCED
+  EXPERT
+  EXPERT_PRO
+}
+
+enum StudentStatus {
+  ACTIVE
+  INACTIVE
+  ARCHIVED
+}
+
+enum StudentRelationship {
+  SELF
+  CHILD
+  SPOUSE
+  OTHER
+}
+
 // ───────────────────────────────────────────
-//  COACH
+// Account / Coach / Student
 // ───────────────────────────────────────────
-//
+
+model Account {
+  id         String      @id @default(cuid())
+
+  // Maps to Clerk user id
+  authUserId String?     @unique
+
+  email      String      @unique
+  firstName  String
+  lastName   String
+  phone      String?
+  role       AccountRole @default(STUDENT)
+
+  // Relations
+  students      AccountStudent[] // students this account can manage
+  ownedCoaches  Coach[]          // coaches this account owns (as a coach)
+
+  createdDate  DateTime @default(now())
+  modifiedDate DateTime @updatedAt
+
+  @@index([email])
+}
 
 model Coach {
   id        String @id @default(cuid())
   subdomain String @unique
+
+  // Owner / auth link
+  ownerAccountId String?
+  ownerAccount   Account? @relation(fields: [ownerAccountId], references: [id])
 
   firstName    String
   lastName     String
@@ -66,6 +122,7 @@ model Coach {
   coachOfferings CoachOffering[]
   testimonials   Testimonial[]
   events         Event[]
+  students       Student[]
 
   // Admin
   status           CoachStatus @default(ACTIVE)
@@ -74,7 +131,66 @@ model Coach {
   statusChangeDate DateTime    @default(now())
 
   @@index([subdomain])
+  @@index([ownerAccountId])
 }
+
+model Student {
+  id        String @id @default(cuid())
+
+  // Which coach this student belongs to
+  coachId String
+  coach   Coach @relation(fields: [coachId], references: [id], onDelete: Cascade)
+
+  // Identity
+  firstName   String
+  lastName    String
+  email       String?
+  phone       String?
+  zip         String?
+  dateOfBirth DateTime?
+
+  // Skill levels
+  skillLevelStudent StudentSkillLevel?
+  skillLevelCoach   StudentSkillLevel?
+
+  status StudentStatus @default(ACTIVE)
+  notes  String?
+
+  // Optional parent/guardian info (for kids)
+  guardianName  String?
+  guardianPhone String?
+  guardianEmail String?
+
+  // Accounts that can manage this student (parents, self, etc.)
+  accounts AccountStudent[]
+
+  createdDate  DateTime @default(now())
+  modifiedDate DateTime @updatedAt
+
+  @@index([coachId])
+  @@index([lastName])
+  @@index([status])
+  @@index([email])
+}
+
+// Join table: which accounts are linked to which students
+model AccountStudent {
+  accountId String
+  studentId String
+
+  isOwner      Boolean             @default(true)
+  relationship StudentRelationship @default(SELF)
+
+  account Account @relation(fields: [accountId], references: [id], onDelete: Cascade)
+  student Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@id([accountId, studentId])
+  @@index([studentId])
+}
+
+// ───────────────────────────────────────────
+// Offerings / Testimonials / Events
+// ───────────────────────────────────────────
 
 model CoachOffering {
   id String @id @default(cuid())
@@ -103,12 +219,6 @@ model CoachOffering {
   @@unique([coachId, type])
 }
 
-//
-// ───────────────────────────────────────────
-//  TESTIMONIALS
-// ───────────────────────────────────────────
-//
-
 model Testimonial {
   id String @id @default(cuid())
 
@@ -119,12 +229,6 @@ model Testimonial {
   name   String
   detail String?
 }
-
-//
-// ───────────────────────────────────────────
-//  EVENTS
-// ───────────────────────────────────────────
-//
 
 model Event {
   id String @id @default(cuid())

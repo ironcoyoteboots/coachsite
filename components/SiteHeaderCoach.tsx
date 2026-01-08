@@ -9,7 +9,7 @@ const navItems = [
   { href: '/admin/students', label: 'Students' },
 ];
 
-export function SiteHeaderAdmin() {
+export function SiteHeaderCoach() {
   const pathname = usePathname();
 
   return (

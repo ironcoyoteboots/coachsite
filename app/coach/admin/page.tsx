@@ -28,7 +28,7 @@ export default async function CoachSelfAdminPage() {
   }
 
   return (
-    <main className="min-h-screen bg-slate-950 text-slate-50 px-4 py-10">
+    <main className="min-h-screen bg-slate-950 text-slate-50 px-4 py-10  mt-10">
       <div className="mx-auto max-w-3xl">
         <h1 className="mb-4 text-2xl font-semibold">Edit My Page</h1>
 
