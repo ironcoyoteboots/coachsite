@@ -62,7 +62,7 @@ model Account {
   id         String      @id @default(cuid())
 
   // Maps to Clerk user id
-  authUserId String?     @unique
+  authUserId String     @unique
 
   email      String      @unique
   firstName  String
@@ -71,8 +71,8 @@ model Account {
   role       AccountRole @default(STUDENT)
 
   // Relations
-  students      AccountStudent[] // students this account can manage
-  ownedCoaches  Coach[]          // coaches this account owns (as a coach)
+  students AccountStudent[] // students this account can manage
+  coaches  Coach[]          // coaches this account owns (as a coach)
 
   createdDate  DateTime @default(now())
   modifiedDate DateTime @updatedAt
@@ -84,9 +84,9 @@ model Coach {
   id        String @id @default(cuid())
   subdomain String @unique
 
-  // Owner / auth link
-  ownerAccountId String?
-  ownerAccount   Account? @relation(fields: [ownerAccountId], references: [id])
+  // auth link
+  accountId String?
+  account   Account? @relation(fields: [accountId], references: [id])
 
   firstName    String
   lastName     String
@@ -131,7 +131,7 @@ model Coach {
   statusChangeDate DateTime    @default(now())
 
   @@index([subdomain])
-  @@index([ownerAccountId])
+  @@index([accountId])
 }
 
 model Student {

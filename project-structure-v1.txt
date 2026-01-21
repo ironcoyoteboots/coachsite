@@ -1,0 +1,108 @@
+.
+├── app
+│   ├── (admin)
+│   │   └── admin
+│   │       ├── coaches
+│   │       │   ├── coach
+│   │       │   │   └── [coachId]
+│   │       │   │       ├── offerings
+│   │       │   │       │   ├── [type]
+│   │       │   │       │   │   └── page.tsx
+│   │       │   │       │   └── page.tsx
+│   │       │   │       └── page.tsx
+│   │       │   └── page.tsx
+│   │       ├── layout.tsx
+│   │       └── page.tsx
+│   ├── (site)
+│   │   └── layout.tsx
+│   ├── account
+│   │   ├── debug
+│   │   │   └── page.tsx
+│   │   └── page.tsx
+│   ├── api
+│   │   └── admin
+│   │       └── coaches
+│   │           ├── [coachId]
+│   │           │   ├── offerings
+│   │           │   │   └── [type]
+│   │           │   │       └── route.ts
+│   │           │   └── route.ts
+│   │           └── check-subdomain
+│   │               └── route.ts
+│   ├── coach
+│   │   ├── [subdomain]
+│   │   │   └── page.tsx
+│   │   └── admin
+│   │       └── page.tsx
+│   ├── colors
+│   │   └── page.tsx
+│   ├── favicon.ico
+│   ├── globals.css
+│   ├── layout.tsx
+│   ├── page.tsx
+│   ├── sign-in
+│   │   └── [[...sign-in]]
+│   │       └── page.tsx
+│   └── sign-up
+│       └── [[...sign-up]]
+│           └── page.tsx
+├── components
+│   ├── admin
+│   │   ├── CoachForm.tsx
+│   │   └── CoachOffering.tsx
+│   ├── SiteHeaderCoach.tsx
+│   └── SiteHeaderLanding.tsx
+├── eslint.config.mjs
+├── lib
+│   ├── auth
+│   │   └── account.ts
+│   ├── coachConfig.ts
+│   ├── coachFonts.ts
+│   ├── colorPalettes.ts
+│   ├── displayNames.ts
+│   └── prisma.ts
+├── middleware.ts
+├── next-env.d.ts
+├── next.config.ts
+├── package-lock.json
+├── package.json
+├── postcss.config.mjs
+├── prisma
+│   ├── migrations
+│   │   ├── 20260106183909_init
+│   │   │   └── migration.sql
+│   │   ├── 20260108170156_add_account_model
+│   │   │   └── migration.sql
+│   │   ├── 20260108203341_add_account_student_and_coach_links
+│   │   │   └── migration.sql
+│   │   └── migration_lock.toml
+│   ├── schema.prisma
+│   └── seed.ts
+├── prisma.config.ts
+├── project-structure-v1.txt
+├── public
+│   ├── file.svg
+│   ├── globe.svg
+│   ├── images
+│   │   ├── coaches
+│   │   │   └── derek
+│   │   │       ├── clinic.jpeg
+│   │   │       ├── group.jpeg
+│   │   │       ├── lesson.jpeg
+│   │   │       └── profile.jpeg
+│   │   ├── golf1.jpg
+│   │   ├── paddles1.jpg
+│   │   ├── pickleballcourt.jpg
+│   │   └── runner1.jpg
+│   ├── next.svg
+│   ├── vercel.svg
+│   ├── videos
+│   │   ├── hero1.mp4
+│   │   ├── hero2.mp4
+│   │   └── pickleball03.mov
+│   └── window.svg
+├── README.md
+├── tailwind.config.js
+└── tsconfig.json
+
+41 directories, 65 files
