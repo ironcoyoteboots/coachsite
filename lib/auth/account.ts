@@ -11,23 +11,12 @@ import { AccountRole } from '@prisma/client';
  */
 export async function getOrCreateAccountForUser(): Promise<Account> {
   const user = await currentUser();
-
   if (!user) {
     throw new Error('Not authenticated');
   }
 
   const authUserId = user.id;
 
-  // 1. Try to find existing account by authUserId
-  const existing = await prisma.account.findUnique({
-    where: { authUserId },
-  });
-
-  if (existing) {
-    return existing;
-  }
-
-  // 2. Derive basic fields from Clerk user
   const primaryEmail =
     user.primaryEmailAddress?.emailAddress ??
     user.emailAddresses[0]?.emailAddress ??
@@ -37,20 +26,25 @@ export async function getOrCreateAccountForUser(): Promise<Account> {
     throw new Error('Authenticated user has no email address');
   }
 
-  const firstName =
-    user.firstName || primaryEmail.split('@')[0] || 'User';
+  const firstName = user.firstName || primaryEmail.split('@')[0] || 'User';
   const lastName = user.lastName || '';
 
-  // 3. Create new Account
-  const created = await prisma.account.create({
-    data: {
+  const account = await prisma.account.upsert({
+    where: { authUserId },
+    update: {
+      email: primaryEmail,
+      firstName,
+      lastName,
+    },
+    create: {
       authUserId,
       email: primaryEmail,
       firstName,
       lastName,
-      role: AccountRole.STUDENT, // default role for new signups
+      role: AccountRole.STUDENT,
     },
   });
 
-  return created;
+  return account;
 }
+
