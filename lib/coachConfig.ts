@@ -7,19 +7,15 @@ import {
 } from "./colorPalettes";
 import { prisma } from "./prisma";
 import type { CoachNameFontClass } from "./coachFonts";
+import type { OfferingType } from "@prisma/client";
+import { OFFERING_TYPE_LABELS } from "./displayNames";
 
 // ───────── Types ─────────
-
-export type CoachOfferingType =
-  | "PRIVATE_LESSON"
-  | "GROUP_CLASS"
-  | "CLINIC"
-  | "RETREAT";
 
 export interface CoachOfferingConfig {
   // Derived from CoachOffering row + configJson
   id: string;                      // UI id/slug, derived from configJson.id or type
-  type: CoachOfferingType;
+  type: OfferingType;
   enabled: boolean;
 
   // Core public “card” fields (match schema)
@@ -52,7 +48,7 @@ export interface CoachEventConfig {
   id: string;
   title: string;
   dateLabel: string;
-  type: CoachOfferingType;
+  type: OfferingType;
   location: string;
   spotsLeft?: number;
   totalSpots?: number;
@@ -98,6 +94,10 @@ export interface CoachConfig {
 
 export interface CoachPageModel extends CoachConfig {
   palette: PaletteClasses;
+}
+
+export function getOfferingTypeLabel(type: OfferingType): string {
+  return OFFERING_TYPE_LABELS[type];
 }
 
 // ───────── Sample Config (UI-level, for seeding) ─────────
@@ -265,7 +265,7 @@ export function mapCoachRecordToConfig(coach: any): CoachConfig {
 
       return {
         id: cfg.id ?? o.type.toLowerCase(), // fall back to type if no id in configJson
-        type: o.type as CoachOfferingType,
+        type: o.type as OfferingType,
         enabled: o.enabled,
         title: o.title ?? undefined,
         subtitle: o.subtitle ?? undefined,
@@ -297,7 +297,7 @@ export function mapCoachRecordToConfig(coach: any): CoachConfig {
       id: e.id,
       title: e.title,
       dateLabel: e.dateLabel,
-      type: e.type as CoachOfferingType,
+      type: e.type as OfferingType,
       location: e.location,
       spotsLeft: e.spotsLeft ?? undefined,
       totalSpots: e.totalSpots ?? undefined,

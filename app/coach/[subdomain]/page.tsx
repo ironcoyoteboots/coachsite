@@ -1,17 +1,11 @@
+"use client";
+
 import Link from "next/link";
-import { notFound } from "next/navigation";
-import { getCoachPageModelBySubdomain } from "@/lib/coachConfig";
+import { useCoach } from "@/components/coach/CoachProvider";
 
-type Params = Promise<{ subdomain: string }>;
 
-export default async function CoachPage({ params }: { params: Params }) {
-  const { subdomain } = await params;
-
-  const coach = await getCoachPageModelBySubdomain(subdomain);
-
-  if (!coach) {
-    notFound();
-  }
+export default function CoachPage() {
+  const coach = useCoach();
 
   const { palette } = coach;
 
