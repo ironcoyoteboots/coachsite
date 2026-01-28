@@ -1,50 +1,64 @@
 // lib/auth/account.ts
-import { currentUser } from '@clerk/nextjs/server';
-import { prisma } from '@/lib/prisma';
-import type { Account } from '@prisma/client';
-import { AccountRole } from '@prisma/client';
+import { currentUser } from "@clerk/nextjs/server";
+import { prisma } from "@/lib/prisma";
+import type { Account, AccountRole } from "@prisma/client";
 
-/**
- * Ensures there is an Account row for the current Clerk user.
- * - Throws if not authenticated.
- * - Returns the Account from your DB.
- */
-export async function getOrCreateAccountForUser(): Promise<Account> {
+export async function ensureAccountFromClerk(
+  roleHint?: AccountRole, // "COACH" | "STUDENT" | "ADMIN" (we'll usually pass COACH/STUDENT)
+): Promise<Account> {
   const user = await currentUser();
   if (!user) {
-    throw new Error('Not authenticated');
+    throw new Error("No current user");
   }
 
-  const authUserId = user.id;
-
-  const primaryEmail =
+  const email =
     user.primaryEmailAddress?.emailAddress ??
-    user.emailAddresses[0]?.emailAddress ??
-    '';
-
-  if (!primaryEmail) {
-    throw new Error('Authenticated user has no email address');
+    user.emailAddresses[0]?.emailAddress;
+  if (!email) {
+    throw new Error("User has no email");
   }
 
-  const firstName = user.firstName || primaryEmail.split('@')[0] || 'User';
-  const lastName = user.lastName || '';
+  const firstName = user.firstName ?? "";
+  const lastName = user.lastName ?? "";
 
-  const account = await prisma.account.upsert({
-    where: { authUserId },
-    update: {
-      email: primaryEmail,
+  let account = await prisma.account.findUnique({
+    where: { authUserId: user.id },
+  });
+
+  if (!account) {
+    // default role is STUDENT unless we have a hint
+    const role: AccountRole = roleHint ?? "STUDENT";
+
+    account = await prisma.account.create({
+      data: {
+        authUserId: user.id,
+        email,
+        firstName,
+        lastName,
+        role,
+      },
+    });
+
+    return account;
+  }
+
+  // If account exists, keep ADMIN as-is, otherwise allow upgrading role based on hint
+  const nextRole: AccountRole =
+    account.role === "ADMIN"
+      ? "ADMIN"
+      : roleHint && roleHint !== account.role
+      ? roleHint
+      : account.role;
+
+  account = await prisma.account.update({
+    where: { id: account.id },
+    data: {
+      email,
       firstName,
       lastName,
-    },
-    create: {
-      authUserId,
-      email: primaryEmail,
-      firstName,
-      lastName,
-      role: AccountRole.STUDENT,
+      role: nextRole,
     },
   });
 
   return account;
 }
-
